@@ -35,6 +35,9 @@ importers:
       openai:
         specifier: ^4.20.1
         version: 4.104.0
+      pnpm:
+        specifier: ^10.19.0
+        version: 10.19.0
     devDependencies:
       concurrently:
         specifier: ^8.2.2
@@ -638,6 +641,11 @@ packages:
   picomatch@2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
+
+  pnpm@10.19.0:
+    resolution: {integrity: sha512-yfxyNukq31yK9C/VvxYS35nCzrYvJwRwMvRyCzP46s3eMRhl6RxBHyd09hjYLzIICOy1Fxi/qCwGDEunx2oyuA==}
+    engines: {node: '>=18.12'}
+    hasBin: true
 
   process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
@@ -1482,6 +1490,8 @@ snapshots:
   path-to-regexp@0.1.12: {}
 
   picomatch@2.3.1: {}
+
+  pnpm@10.19.0: {}
 
   process-nextick-args@2.0.1: {}
 
