@@ -88,9 +88,20 @@ function ContinuationMode() {
   };
 
   const locationOptions = [
-    'living room', 'kitchen', 'bedroom', 'bathroom', 'home office',
-    'dining room', 'porch', 'backyard', 'garage', 'balcony',
-    'entryway', 'hallway', 'laundry room', 'walk-in closet'
+    { value: 'living room', label: 'Sala de estar' },
+    { value: 'kitchen', label: 'Cocina' },
+    { value: 'bedroom', label: 'Dormitorio' },
+    { value: 'bathroom', label: 'Baño' },
+    { value: 'home office', label: 'Oficina en casa' },
+    { value: 'dining room', label: 'Comedor' },
+    { value: 'porch', label: 'Porche' },
+    { value: 'backyard', label: 'Patio trasero' },
+    { value: 'garage', label: 'Garaje' },
+    { value: 'balcony', label: 'Balcón' },
+    { value: 'entryway', label: 'Entrada' },
+    { value: 'hallway', label: 'Pasillo' },
+    { value: 'laundry room', label: 'Lavandería' },
+    { value: 'walk-in closet', label: 'Vestidor' }
   ];
 
   return (
@@ -230,7 +241,11 @@ function ContinuationMode() {
               <div className="form-group">
                 <label htmlFor="room">Habitación/Ubicación *</label>
                 <select id="room" name="room" value={formData.room} onChange={handleChange} required>
-                  {locationOptions.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+                  {locationOptions.map((loc) => (
+                    <option key={loc.value} value={loc.value}>
+                      {loc.label}
+                    </option>
+                  ))}
                 </select>
               </div>
             ) : (
@@ -240,7 +255,11 @@ function ContinuationMode() {
                   <div key={i} className="location-item">
                     <span>Segmento {i+1}:</span>
                     <select value={loc} onChange={(e) => handleLocationChange(i, e.target.value)}>
-                      {locationOptions.map(o => <option key={o} value={o}>{o}</option>)}
+                      {locationOptions.map((o) => (
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 ))}

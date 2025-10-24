@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 function ScriptForm({ onSubmit, loading }) {
   const [formData, setFormData] = useState({
@@ -86,7 +86,7 @@ function ScriptForm({ onSubmit, loading }) {
   };
 
   // Script preview logic
-  const previewScript = () => {
+  const previewScript = useCallback(() => {
     if (!formData.script || formData.script.trim().length < 50) {
       setScriptPreview([]);
       return;
@@ -142,14 +142,14 @@ function ScriptForm({ onSubmit, loading }) {
     }
     
     setScriptPreview(segments);
-  };
+  }, [formData.script, formData.targetWordsPerSegment]);
 
   // Update preview when script or target words change
   useEffect(() => {
     if (formData.showPreview) {
       previewScript();
     }
-  }, [formData.script, formData.targetWordsPerSegment, formData.showPreview]);
+  }, [formData.showPreview, previewScript]);
 
   // Save/Load Settings Functions
   const saveSettings = () => {
@@ -424,17 +424,17 @@ function ScriptForm({ onSubmit, loading }) {
         </div>
 
         <div className="form-group">
-          <label htmlFor="characterFeatures">Specific Features (Optional)</label>
+          <label htmlFor="characterFeatures">Rasgos específicos (opcional)</label>
           <input
             type="text"
             id="characterFeatures"
             name="characterFeatures"
             value={formData.characterFeatures || ''}
             onChange={handleChange}
-            placeholder="e.g., curly hair, glasses, freckles, beard..."
+            placeholder="ej.: cabello rizado, gafas, pecas, barba..."
           />
           <p className="form-help-text">
-            Add specific physical features to make the character more distinctive
+            Añade rasgos físicos específicos para que el personaje sea más distintivo
           </p>
         </div>
 
