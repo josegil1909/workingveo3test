@@ -1,140 +1,152 @@
-# UGC Script Splitter for Veo 3
+# Divisor de guiones UGC para Veo 3
 
-Transform your UGC scripts into AI-ready video segments with integrated Veo 3 support.
+Convierte tus guiones UGC en segmentos de video listos para IA con soporte integrado de Veo 3.
 
-## Features
+## Funcionalidades
 
-- 📝 **Script Splitting**: Automatically splits long scripts into 8-second segments
-- 🎭 **Two JSON Formats**: 
-  - Standard (300+ words) 
-  - Enhanced Continuity (500+ words with micro-expressions)
-- 🎬 **Veo 3 Integration**: Generate video descriptions (full video generation coming soon)
-- 📦 **Bulk Export**: Download all segments as ZIP
-- 💰 **Cost Estimation**: See video generation costs upfront
+- 📝 **División de guiones**: divide automáticamente guiones largos en segmentos de 8 segundos
+- 🎭 **Dos formatos JSON**:
+  - Estándar (300+ palabras)
+  - Continuidad mejorada (500+ palabras con microexpresiones)
+- 🎬 **Integración con Veo 3**: genera descripciones de video (la generación completa llegará pronto)
+- 📦 **Exportación masiva**: descarga todos los segmentos en un ZIP
+- 💰 **Estimación de costos**: visualiza el costo de generación de video por adelantado
 
-## Setup
+## Configuración
 
-### 1. Install Dependencies
+### 1. Instalar dependencias
+
 ```bash
 npm run install-all
 ```
 
-### 2. Configure API Keys
+### 2. Configurar claves API
 
-Create a `.env` file in the root directory:
+Crea un archivo `.env` en el directorio raíz:
 
 ```env
-# OpenAI (Required)
+# OpenAI (Obligatorio)
 OPENAI_API_KEY=sk-...
 
-# Choose ONE of these authentication methods:
+# Elige UNO de estos métodos de autenticación:
 
-# Option A: Gemini API (Simple)
-GOOGLE_GEMINI_API_KEY=your-gemini-api-key
+# Opción A: API de Gemini (simple)
+GOOGLE_GEMINI_API_KEY=tu-api-key-de-gemini
 
-# Option B: Vertex AI with Service Account (Enterprise)
-GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account-key.json
-VERTEX_PROJECT_ID=your-project-id
+# Opción B: Vertex AI con Service Account (empresarial)
+GOOGLE_APPLICATION_CREDENTIALS=/ruta/al/service-account-key.json
+VERTEX_PROJECT_ID=tu-project-id
 VERTEX_LOCATION=us-central1
 
-# Option C: Kie.ai for Actual Video Generation (93% cheaper!)
-KIEAI_API_KEY=your-kieai-api-key
+# Opción C: Kie.ai para generación real de video (¡93% más barato!)
+KIEAI_API_KEY=tu-api-key-de-kieai
 ```
 
-### 3. Vertex AI Setup (If using Vertex AI)
+### 3. Configurar Vertex AI (si lo usas)
 
-1. **Create a Service Account**:
+1. **Crear una Service Account**:
+
    ```bash
    gcloud iam service-accounts create veo3-service \
      --display-name="Veo 3 Service Account"
    ```
 
-2. **Grant Required Permissions**:
+2. **Otorgar permisos necesarios**:
+
    ```bash
    gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
      --member="serviceAccount:veo3-service@YOUR_PROJECT_ID.iam.gserviceaccount.com" \
      --role="roles/aiplatform.user"
    ```
 
-3. **Download Service Account Key**:
+3. **Descargar la clave de la Service Account**:
+
    ```bash
    gcloud iam service-accounts keys create ./service-account-key.json \
      --iam-account=veo3-service@YOUR_PROJECT_ID.iam.gserviceaccount.com
    ```
 
-4. **Update .env**:
+4. **Actualizar .env**:
+
    ```env
    GOOGLE_APPLICATION_CREDENTIALS=./service-account-key.json
-   VERTEX_PROJECT_ID=your-project-id
+   VERTEX_PROJECT_ID=tu-project-id
    VERTEX_LOCATION=us-central1
    ```
 
-## Running the App
+## Ejecución de la aplicación
 
-### Development
+### Desarrollo
+
 ```bash
 npm run dev
 ```
-Access at http://localhost:3001
 
-### Production
+Disponible en [http://localhost:3001](http://localhost:3001)
+
+### Producción
+
 ```bash
 npm run build
 npm start
 ```
 
-## Usage
+## Uso
 
-1. **Enter Your Script**: Paste your UGC script (minimum 50 characters)
-2. **Configure Settings**: 
-   - Select age range, gender, room style
-   - Choose JSON format (Standard or Enhanced)
-3. **Generate Segments**: Click to create AI-ready JSON segments
-4. **Generate Videos** (Optional): Create video descriptions with Veo 3
-5. **Download**: Export all segments as ZIP
+1. **Ingresa tu guion**: pega el guion UGC (mínimo 50 caracteres)
+2. **Configura opciones**:
+   - Selecciona rango de edad, género y estilo del espacio
+   - Elige formato JSON (Estándar o Continuidad mejorada)
+3. **Genera segmentos**: crea los segmentos JSON listos para IA
+4. **Genera videos** (opcional): obtiene descripciones de video con Veo 3
+5. **Descarga**: exporta todos los segmentos en un ZIP
 
-## API Endpoints
+## Endpoints de la API
 
-- `POST /api/generate` - Generate JSON segments from script
-- `POST /api/download` - Download segments as ZIP
-- `POST /api/generate-videos` - Generate video descriptions
+- `POST /api/generate` - Genera segmentos JSON a partir del guion
+- `POST /api/download` - Descarga los segmentos en ZIP
+- `POST /api/generate-videos` - Genera descripciones de video
 
-## Cost Information
+## Información de costos
 
-### Official Veo 3 API (When Available)
-- **Cost**: $0.75 per second of video
-- **8-second segments**: $6 per segment
-- **Example**: 5 segments = $30
+### API oficial de Veo 3 (cuando esté disponible)
 
-### Kie.ai Integration (Available Now!)
-- **Cost**: $0.40 per video (flat rate, not per second)
-- **8-second segments**: $0.40 per segment
-- **Example**: 5 segments = $2
-- **Savings**: 93% cheaper than official API
+- **Costo**: $0.75 por segundo de video
+- **Segmentos de 8 segundos**: $6 por segmento
+- **Ejemplo**: 5 segmentos = $30
 
-## Kie.ai Setup (For Actual Video Generation)
+### Integración con Kie.ai (¡disponible hoy!)
 
-1. **Sign up at https://siliconflow.cn**
-   - Use Google login for easy access
-   - Top up your balance ($5 minimum)
+- **Costo**: $0.40 por video (tarifa fija, no por segundo)
+- **Segmentos de 8 segundos**: $0.40 por segmento
+- **Ejemplo**: 5 segmentos = $2
+- **Ahorro**: 93% más barato que la API oficial
 
-2. **Get your API key**
-   - Go to API Keys section
-   - Copy your key
+## Configuración de Kie.ai (para generación real de video)
 
-3. **Add to .env**
+1. **Regístrate en [https://siliconflow.cn](https://siliconflow.cn)**
+   - Usa tu cuenta de Google para acceder rápido
+   - Recarga tu saldo (mínimo $5)
+
+2. **Obtén tu API key**
+   - Entra a la sección API Keys
+   - Copia tu llave
+
+3. **Agrégala al `.env`**
+
    ```env
-   KIEAI_API_KEY=your-kieai-api-key
+   KIEAI_API_KEY=tu-api-key-de-kieai
    ```
 
-4. **Use in the app**
-   - Toggle "Use Kie.ai" in the Video Generator
-   - Videos generate in 5-8 minutes
-   - Download links appear when ready
+4. **Úsala en la app**
+   - Activa "Use Kie.ai" en el Generador de Video
+   - Los videos se generan en 5-8 minutos
+   - Los enlaces de descarga aparecen cuando están listos
 
-## Deployment
+## Despliegue
 
 ### Heroku
+
 ```bash
 heroku create your-app-name
 heroku config:set OPENAI_API_KEY=sk-...
@@ -143,6 +155,7 @@ git push heroku main
 ```
 
 ### Google Cloud Run
+
 ```bash
 gcloud run deploy ugc-script-splitter \
   --source . \
@@ -150,19 +163,19 @@ gcloud run deploy ugc-script-splitter \
   --allow-unauthenticated
 ```
 
-## Security Notes
+## Notas de seguridad
 
-- Never commit API keys or service account files
-- Add `service-account-key.json` to `.gitignore`
-- Use environment variables for all sensitive data
+- Nunca subas a Git las API keys ni los archivos de cuentas de servicio
+- Añade `service-account-key.json` a `.gitignore`
+- Usa variables de entorno para toda la información sensible
 
-## Future Features
+## Próximas funcionalidades
 
-- [ ] Direct Veo 3 video generation (when API is available)
-- [ ] Image-to-video support
-- [ ] Video preview in browser
-- [ ] Batch processing for multiple scripts
+- [ ] Generación directa de video con Veo 3 (cuando la API esté disponible)
+- [ ] Soporte de imagen a video
+- [ ] Vista previa de video en el navegador
+- [ ] Procesamiento en lote para múltiples guiones
 
-## License
+## Licencia
 
 MIT
