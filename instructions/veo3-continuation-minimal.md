@@ -59,6 +59,7 @@ For continuation segments after the initial detailed segment, focus on voice and
 ## Key Focus Areas for Continuation Segments
 
 ### 1. Voice Matching (150+ words REQUIRED)
+
 This is the MOST CRITICAL element. Include:
 - **Exact Technical Specs**: Pitch range, speaking rate, tone qualities
 - **Breathing Patterns**: Where natural breaths occur
@@ -67,6 +68,7 @@ This is the MOST CRITICAL element. Include:
 - **Consistency Markers**: Unique voice qualities to maintain
 
 ### 2. Behavioral Patterns (100+ words)
+
 Detailed description of:
 - **Gesture Vocabulary**: Specific hand movements and patterns
 - **Energy Expression**: How enthusiasm manifests physically
@@ -75,6 +77,7 @@ Detailed description of:
 - **Reaction Patterns**: How character responds to own words
 
 ### 3. Current State (50+ words)
+
 Brief but specific:
 - Current energy level (percentage)
 - Facial expression in this moment
@@ -82,6 +85,7 @@ Brief but specific:
 - Emotional undertone
 
 ### 4. Minimal Physical Description
+
 Simply reference:
 - "Continue from screenshot appearance"
 - "Same character as established"
@@ -90,6 +94,7 @@ Simply reference:
 ## Voice Continuity Details
 
 ### Technical Specifications (MUST MATCH EXACTLY)
+
 ```json
 "voice_technical": {
   "pitch_range": "[Exact Hz range from profile]",
@@ -102,6 +107,7 @@ Simply reference:
 ```
 
 ### Emphasis Patterns
+
 - Product names: Slight slow-down, clearer articulation
 - Benefits: Rising energy, pitch up 5-10 Hz
 - Emotional moments: Warmer tone, slight smile in voice
@@ -110,18 +116,21 @@ Simply reference:
 ## Behavioral Consistency Framework
 
 ### Gesture Patterns
+
 - **Hands**: Natural movement arcs, never robotic
 - **Amplitude**: How big/small gestures are
 - **Rhythm**: Matching speech cadence
 - **Rest Positions**: Where hands return between gestures
 
 ### Energy Expression
+
 - **Baseline**: Normal energy percentage
 - **Peaks**: How excitement shows physically
 - **Valleys**: Quieter moments still engaged
 - **Transitions**: Smooth energy changes
 
 ### Facial Consistency
+
 - **Micro-expressions**: Quick emotion flashes
 - **Eye engagement**: Direct to camera connection
 - **Smile variations**: Genuine vs. presentational
@@ -130,12 +139,14 @@ Simply reference:
 ## Transition Requirements
 
 ### From Screenshot
+
 - Match EXACT position and expression
 - Continue any mid-gesture movement
 - Maintain energy level unless script requires change
 - Voice picks up at same emotional tone
 
 ### To Next Segment
+
 - Clear end position for next screenshot
 - Natural completion of current thought
 - Energy appropriate for upcoming content

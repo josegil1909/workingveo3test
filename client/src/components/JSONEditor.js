@@ -35,8 +35,7 @@ function JSONEditor({ segment, onUpdate, onClose }) {
       // Validación recuento de palabras
       const physical = parsed.character_description?.physical || '';
       const clothing = parsed.character_description?.clothing || '';
-      const countWords = (text) =>
-        text.split(/\s+/).filter((w) => w.length > 0).length;
+      const countWords = (text) => text.split(/\s+/).filter((w) => w.length > 0).length;
 
       const physicalWords = countWords(physical);
       const clothingWords = countWords(clothing);
@@ -151,9 +150,7 @@ function JSONEditor({ segment, onUpdate, onClose }) {
                 </div>
                 <div className="stat-item">
                   <span>Voz:</span>
-                  <span className={stats.voice < 50 ? 'low' : 'good'}>
-                    {stats.voice} palabras
-                  </span>
+                  <span className={stats.voice < 50 ? 'low' : 'good'}>{stats.voice} palabras</span>
                 </div>
                 <div className="stat-item">
                   <span>Diálogo:</span>
@@ -171,7 +168,9 @@ function JSONEditor({ segment, onUpdate, onClose }) {
         </div>
 
         <div className="json-editor-tips">
-          <p><strong>Consejos:</strong></p>
+          <p>
+            <strong>Consejos:</strong>
+          </p>
           <ul>
             <li>Usa Ctrl+F para buscar texto</li>
             <li>Haz clic en "Formatear" para autoformatear JSON</li>

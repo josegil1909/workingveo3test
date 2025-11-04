@@ -23,9 +23,9 @@ function ScriptForm({ onSubmit, loading }) {
     showPreview: false,
     ethnicity: '',
     characterFeatures: '',
-    accentRegion: 'neutral-american'
+    accentRegion: 'neutral-american',
   });
-  
+
   const [scriptPreview, setScriptPreview] = useState([]);
   const [savedSettings, setSavedSettings] = useState([]);
 
@@ -43,11 +43,11 @@ function ScriptForm({ onSubmit, loading }) {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     if (type === 'checkbox') {
       setFormData({
         ...formData,
-        [name]: checked
+        [name]: checked,
       });
     } else if (name === 'settingMode') {
       // Reset locations when changing setting mode
@@ -57,16 +57,16 @@ function ScriptForm({ onSubmit, loading }) {
       } else if (value === 'indoor-outdoor') {
         defaultLocations = ['living room', 'porch', 'kitchen', 'backyard'];
       }
-      
+
       setFormData({
         ...formData,
         [name]: value,
-        locations: defaultLocations
+        locations: defaultLocations,
       });
     } else {
       setFormData({
         ...formData,
-        [name]: value
+        [name]: value,
       });
     }
   };
@@ -76,7 +76,7 @@ function ScriptForm({ onSubmit, loading }) {
     newLocations[index] = value;
     setFormData({
       ...formData,
-      locations: newLocations
+      locations: newLocations,
     });
   };
 
@@ -95,28 +95,28 @@ function ScriptForm({ onSubmit, loading }) {
     const targetWords = parseInt(formData.targetWordsPerSegment) || 20;
     const minWords = Math.max(15, targetWords - 5);
     const maxWords = targetWords + 2;
-    
+
     // Split into sentences
     const sentences = formData.script.match(/[^.!?]+[.!?]+/g) || [formData.script];
-    
+
     const segments = [];
     let currentSegment = '';
     let currentWordCount = 0;
-    
+
     for (let i = 0; i < sentences.length; i++) {
       const sentence = sentences[i].trim();
       const sentenceWords = sentence.split(/\s+/).length;
-      
+
       if (currentSegment === '') {
         currentSegment = sentence;
         currentWordCount = sentenceWords;
-        
+
         // Keep adding sentences until we meet minimum
         while (currentWordCount < minWords && i + 1 < sentences.length) {
           i++;
           const nextSentence = sentences[i].trim();
           const nextWords = nextSentence.split(/\s+/).length;
-          
+
           if (currentWordCount + nextWords > maxWords) {
             if (currentWordCount < minWords) {
               currentSegment += ' ' + nextSentence;
@@ -130,17 +130,17 @@ function ScriptForm({ onSubmit, loading }) {
             currentWordCount += nextWords;
           }
         }
-        
+
         segments.push({
           text: currentSegment,
           wordCount: currentWordCount,
-          duration: Math.round((currentWordCount / 2.5) * 10) / 10 // Approximate seconds
+          duration: Math.round((currentWordCount / 2.5) * 10) / 10, // Approximate seconds
         });
         currentSegment = '';
         currentWordCount = 0;
       }
     }
-    
+
     setScriptPreview(segments);
   }, [formData.script, formData.targetWordsPerSegment]);
 
@@ -157,18 +157,18 @@ function ScriptForm({ onSubmit, loading }) {
     // Remove script and preview state from saved settings
     delete settingsToSave.script;
     delete settingsToSave.showPreview;
-    
+
     const settingName = prompt('Ingresa un nombre para estas configuraciones:');
     if (settingName) {
       const existingSaved = [...savedSettings];
       const newSetting = {
         name: settingName,
         date: new Date().toLocaleDateString(),
-        settings: settingsToSave
+        settings: settingsToSave,
       };
-      
+
       // Check if name already exists
-      const existingIndex = existingSaved.findIndex(s => s.name === settingName);
+      const existingIndex = existingSaved.findIndex((s) => s.name === settingName);
       if (existingIndex >= 0) {
         if (window.confirm(`La configuración "${settingName}" ya existe. ¿Sobrescribir?`)) {
           existingSaved[existingIndex] = newSetting;
@@ -178,7 +178,7 @@ function ScriptForm({ onSubmit, loading }) {
       } else {
         existingSaved.push(newSetting);
       }
-      
+
       localStorage.setItem('ugcScriptSettings', JSON.stringify(existingSaved));
       setSavedSettings(existingSaved);
       alert(`¡Configuración "${settingName}" guardada exitosamente!`);
@@ -186,13 +186,13 @@ function ScriptForm({ onSubmit, loading }) {
   };
 
   const loadSettings = (settingName) => {
-    const setting = savedSettings.find(s => s.name === settingName);
+    const setting = savedSettings.find((s) => s.name === settingName);
     if (setting) {
       setFormData({
         ...formData,
         ...setting.settings,
         script: formData.script, // Keep current script
-        showPreview: false
+        showPreview: false,
       });
       alert(`¡Configuración "${settingName}" cargada!`);
     }
@@ -200,7 +200,7 @@ function ScriptForm({ onSubmit, loading }) {
 
   const deleteSettings = (settingName) => {
     if (window.confirm(`¿Eliminar configuración "${settingName}"?`)) {
-      const updated = savedSettings.filter(s => s.name !== settingName);
+      const updated = savedSettings.filter((s) => s.name !== settingName);
       localStorage.setItem('ugcScriptSettings', JSON.stringify(updated));
       setSavedSettings(updated);
     }
@@ -211,14 +211,10 @@ function ScriptForm({ onSubmit, loading }) {
       <div className="settings-controls">
         <h3>Gestión de Configuraciones</h3>
         <div className="settings-buttons">
-          <button
-            type="button"
-            className="settings-button save-button"
-            onClick={saveSettings}
-          >
+          <button type="button" className="settings-button save-button" onClick={saveSettings}>
             💾 Guardar configuración actual
           </button>
-          
+
           {savedSettings.length > 0 && (
             <div className="saved-settings-list">
               <label>Cargar configuración guardada:</label>
@@ -261,12 +257,15 @@ function ScriptForm({ onSubmit, loading }) {
           minLength={50}
         />
         <p className="form-help-text">
-          Cada segmento necesita entre 15 y 22 palabras (6-8 segundos de narración). Las oraciones cortas se combinarán automáticamente.
+          Cada segmento necesita entre 15 y 22 palabras (6-8 segundos de narración). Las oraciones
+          cortas se combinarán automáticamente.
         </p>
       </div>
 
       <div className="form-group">
-        <label htmlFor="targetWordsPerSegment">Palabras por Segmento (Objetivo: {formData.targetWordsPerSegment})</label>
+        <label htmlFor="targetWordsPerSegment">
+          Palabras por Segmento (Objetivo: {formData.targetWordsPerSegment})
+        </label>
         <input
           type="range"
           id="targetWordsPerSegment"
@@ -278,7 +277,8 @@ function ScriptForm({ onSubmit, loading }) {
           step="1"
         />
         <p className="form-help-text">
-          Ajusta el número de palabras objetivo por segmento de 8 segundos (15 = ritmo más lento, 30 = más rápido)
+          Ajusta el número de palabras objetivo por segmento de 8 segundos (15 = ritmo más lento, 30
+          = más rápido)
         </p>
       </div>
 
@@ -298,7 +298,8 @@ function ScriptForm({ onSubmit, loading }) {
         <div className="script-preview">
           <h3>Vista previa del guion - {scriptPreview.length} segmentos</h3>
           <p className="preview-info">
-            Total duration: ~{scriptPreview.reduce((sum, seg) => sum + seg.duration, 0).toFixed(1)} seconds
+            Total duration: ~{scriptPreview.reduce((sum, seg) => sum + seg.duration, 0).toFixed(1)}{' '}
+            seconds
           </p>
           <div className="preview-segments">
             {scriptPreview.map((segment, index) => (
@@ -309,9 +310,7 @@ function ScriptForm({ onSubmit, loading }) {
                     {segment.wordCount} palabras | ~{segment.duration}s
                   </span>
                 </div>
-                <div className="preview-segment-text">
-                  {segment.text}
-                </div>
+                <div className="preview-segment-text">{segment.text}</div>
               </div>
             ))}
           </div>
@@ -333,12 +332,7 @@ function ScriptForm({ onSubmit, loading }) {
 
       <div className="form-group">
         <label htmlFor="ageRange">Rango de edad</label>
-        <select
-          id="ageRange"
-          name="ageRange"
-          value={formData.ageRange}
-          onChange={handleChange}
-        >
+        <select id="ageRange" name="ageRange" value={formData.ageRange} onChange={handleChange}>
           <option value="18-24">18-24</option>
           <option value="25-34">25-34</option>
           <option value="35-44">35-44</option>
@@ -349,33 +343,23 @@ function ScriptForm({ onSubmit, loading }) {
 
       <div className="form-group">
         <label htmlFor="gender">Género</label>
-        <select
-          id="gender"
-          name="gender"
-          value={formData.gender}
-          onChange={handleChange}
-        >
-                <option value="female">Femenino</option>
-                <option value="male">Masculino</option>
-                <option value="non-binary">No binario</option>
+        <select id="gender" name="gender" value={formData.gender} onChange={handleChange}>
+          <option value="female">Femenino</option>
+          <option value="male">Masculino</option>
+          <option value="non-binary">No binario</option>
         </select>
       </div>
 
       <div className="form-group">
         <label htmlFor="voiceType">Tipo de voz</label>
-        <select
-          id="voiceType"
-          name="voiceType"
-          value={formData.voiceType}
-          onChange={handleChange}
-        >
-                <option value="warm-friendly">Cálida y amigable</option>
-                <option value="professional-clear">Profesional y clara</option>
-                <option value="energetic-upbeat">Energética y animada</option>
-                <option value="calm-soothing">Calmante y suave</option>
-                <option value="conversational-casual">Conversacional e informal</option>
-                <option value="authoritative-confident">Autoritaria y confiada</option>
-                <option value="youthful-playful">Juvenil y juguetona</option>
+        <select id="voiceType" name="voiceType" value={formData.voiceType} onChange={handleChange}>
+          <option value="warm-friendly">Cálida y amigable</option>
+          <option value="professional-clear">Profesional y clara</option>
+          <option value="energetic-upbeat">Energética y animada</option>
+          <option value="calm-soothing">Calmante y suave</option>
+          <option value="conversational-casual">Conversacional e informal</option>
+          <option value="authoritative-confident">Autoritaria y confiada</option>
+          <option value="youthful-playful">Juvenil y juguetona</option>
         </select>
         <p className="form-help-text">
           Define el tono de voz y estilo de entrega para consistencia entre segmentos
@@ -401,7 +385,7 @@ function ScriptForm({ onSubmit, loading }) {
 
       <div className="form-section">
         <h3>Detalles avanzados de personaje</h3>
-        
+
         <div className="form-group">
           <label htmlFor="ethnicity">Etnicidad/Apariencia</label>
           <select
@@ -410,16 +394,16 @@ function ScriptForm({ onSubmit, loading }) {
             value={formData.ethnicity || ''}
             onChange={handleChange}
           >
-                <option value="">No especificado</option>
-                <option value="caucasian">Caucásico</option>
-                <option value="african-american">Afroamericano</option>
-                <option value="hispanic-latino">Hispano/Latino</option>
-                <option value="asian-east">Asiático oriental</option>
-                <option value="asian-south">Asiático meridional</option>
-                <option value="middle-eastern">Medio Oriente</option>
-                <option value="mixed-race">Mestizo</option>
-                <option value="pacific-islander">Isleño del Pacífico</option>
-                <option value="native-american">Nativo americano</option>
+            <option value="">No especificado</option>
+            <option value="caucasian">Caucásico</option>
+            <option value="african-american">Afroamericano</option>
+            <option value="hispanic-latino">Hispano/Latino</option>
+            <option value="asian-east">Asiático oriental</option>
+            <option value="asian-south">Asiático meridional</option>
+            <option value="middle-eastern">Medio Oriente</option>
+            <option value="mixed-race">Mestizo</option>
+            <option value="pacific-islander">Isleño del Pacífico</option>
+            <option value="native-american">Nativo americano</option>
           </select>
         </div>
 
@@ -446,18 +430,18 @@ function ScriptForm({ onSubmit, loading }) {
             value={formData.accentRegion || 'neutral-american'}
             onChange={handleChange}
           >
-                <option value="neutral-american">Neutro americano</option>
-                <option value="southern-us">Sur de EE.UU.</option>
-                <option value="new-york">Nueva York</option>
-                <option value="midwest">Medio Oeste</option>
-                <option value="california">California</option>
-                <option value="british-rp">Británico (RP)</option>
-                <option value="british-regional">Británico regional</option>
-                <option value="australian">Australiano</option>
-                <option value="canadian">Canadiense</option>
-                <option value="irish">Irlandés</option>
-                <option value="scottish">Escocés</option>
-                <option value="international">Internacional/Mixto</option>
+            <option value="neutral-american">Neutro americano</option>
+            <option value="southern-us">Sur de EE.UU.</option>
+            <option value="new-york">Nueva York</option>
+            <option value="midwest">Medio Oeste</option>
+            <option value="california">California</option>
+            <option value="british-rp">Británico (RP)</option>
+            <option value="british-regional">Británico regional</option>
+            <option value="australian">Australiano</option>
+            <option value="canadian">Canadiense</option>
+            <option value="irish">Irlandés</option>
+            <option value="scottish">Escocés</option>
+            <option value="international">Internacional/Mixto</option>
           </select>
         </div>
       </div>
@@ -478,20 +462,15 @@ function ScriptForm({ onSubmit, loading }) {
           {formData.settingMode === 'single'
             ? 'Graba en una ubicación consistente'
             : formData.settingMode === 'home-tour'
-            ? 'Muévete por diferentes habitaciones de la casa'
-            : 'Mezcla ubicaciones interiores y exteriores'}
+              ? 'Muévete por diferentes habitaciones de la casa'
+              : 'Mezcla ubicaciones interiores y exteriores'}
         </p>
       </div>
 
       {formData.settingMode === 'single' ? (
         <div className="form-group">
           <label htmlFor="room">Habitación/Ubicación</label>
-          <select
-            id="room"
-            name="room"
-            value={formData.room}
-            onChange={handleChange}
-          >
+          <select id="room" name="room" value={formData.room} onChange={handleChange}>
             <option value="living room">Sala de estar</option>
             <option value="kitchen">Cocina</option>
             <option value="bathroom">Baño</option>
@@ -526,12 +505,7 @@ function ScriptForm({ onSubmit, loading }) {
 
       <div className="form-group">
         <label htmlFor="style">Estilo</label>
-        <select
-          id="style"
-          name="style"
-          value={formData.style}
-          onChange={handleChange}
-        >
+        <select id="style" name="style" value={formData.style} onChange={handleChange}>
           <option value="casual and friendly">Casual y amigable</option>
           <option value="professional">Profesional</option>
           <option value="energetic">Energético</option>
@@ -560,7 +534,7 @@ function ScriptForm({ onSubmit, loading }) {
 
       <div className="form-section">
         <h3>Configuraciones visuales y de producción</h3>
-        
+
         <div className="form-group">
           <label htmlFor="cameraStyle">Estilo de cámara</label>
           <select
@@ -606,7 +580,7 @@ function ScriptForm({ onSubmit, loading }) {
 
       <div className="form-section">
         <h3>Historia y presentación</h3>
-        
+
         <div className="form-group">
           <label htmlFor="productStyle">Estilo de exhibición del producto</label>
           <select
@@ -615,10 +589,10 @@ function ScriptForm({ onSubmit, loading }) {
             value={formData.productStyle}
             onChange={handleChange}
           >
-                <option value="natural">Integración natural</option>
-                <option value="showcase">Mostrar características</option>
-                <option value="before-after">Demostración antes/después</option>
-                <option value="lifestyle">Contexto de estilo de vida</option>
+            <option value="natural">Integración natural</option>
+            <option value="showcase">Mostrar características</option>
+            <option value="before-after">Demostración antes/después</option>
+            <option value="lifestyle">Contexto de estilo de vida</option>
           </select>
         </div>
 
@@ -630,10 +604,10 @@ function ScriptForm({ onSubmit, loading }) {
             value={formData.energyArc}
             onChange={handleChange}
           >
-                <option value="consistent">Energía consistente</option>
-                <option value="building">Generar entusiasmo</option>
-                <option value="problem-solution">De problema a solución</option>
-                <option value="discovery">Viaje de descubrimiento</option>
+            <option value="consistent">Energía consistente</option>
+            <option value="building">Generar entusiasmo</option>
+            <option value="problem-solution">De problema a solución</option>
+            <option value="discovery">Viaje de descubrimiento</option>
           </select>
         </div>
 
@@ -645,19 +619,15 @@ function ScriptForm({ onSubmit, loading }) {
             value={formData.narrativeStyle}
             onChange={handleChange}
           >
-                <option value="direct-review">Reseña directa</option>
-                <option value="day-in-life">Un día en la vida</option>
-                <option value="problem-solver">Solucionador de problemas</option>
-                <option value="comparison">Historia comparativa</option>
+            <option value="direct-review">Reseña directa</option>
+            <option value="day-in-life">Un día en la vida</option>
+            <option value="problem-solver">Solucionador de problemas</option>
+            <option value="comparison">Historia comparativa</option>
           </select>
         </div>
       </div>
 
-      <button 
-        type="submit" 
-        className="submit-button"
-        disabled={loading}
-      >
+      <button type="submit" className="submit-button" disabled={loading}>
         {loading ? 'Generando...' : 'Generar segmentos'}
       </button>
     </form>

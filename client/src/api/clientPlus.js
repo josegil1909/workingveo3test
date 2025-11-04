@@ -53,4 +53,4 @@ export async function generateVideosPlus(segments) {
   const result = await response.json();
   console.log('[API Client Plus] Video generation success:', result);
   return result;
-} 
+}

@@ -10,7 +10,7 @@ function VideoGenerator({ segments }) {
   const handleGenerateVideos = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const result = await generateVideos(segments);
       setVideos(result.videos);
@@ -28,40 +28,29 @@ function VideoGenerator({ segments }) {
   return (
     <div className="video-generator">
       <h3>Generación de Video</h3>
-      
+
       <div className="video-info">
-        <p><strong>Listo para generar {segments.length} segmentos de video</strong></p>
-        
-        
+        <p>
+          <strong>Listo para generar {segments.length} segmentos de video</strong>
+        </p>
+
         <p className="video-cost">Costo estimado: {getCostDisplay()}</p>
       </div>
 
-      <button 
-        className="generate-videos-button"
-        onClick={handleGenerateVideos}
-        disabled={loading}
-      >
+      <button className="generate-videos-button" onClick={handleGenerateVideos} disabled={loading}>
         {loading ? 'Procesando...' : 'Generar descripciones de video'}
       </button>
 
-      {error && (
-        <div className="error-message">
-          Error: {error}
-        </div>
-      )}
+      {error && <div className="error-message">Error: {error}</div>}
 
       {videos && (
         <div className="videos-results">
           <h4>Resultados de descripciones de video</h4>
-           <p className="video-status">
-             ✅ Descripciones generadas para los {videos.length} segmentos
-           </p>
-          
-          
-          <button 
-            className="toggle-details-button"
-            onClick={() => setShowDetails(!showDetails)}
-          >
+          <p className="video-status">
+            ✅ Descripciones generadas para los {videos.length} segmentos
+          </p>
+
+          <button className="toggle-details-button" onClick={() => setShowDetails(!showDetails)}>
             {showDetails ? 'Ocultar detalles' : 'Mostrar detalles'}
           </button>
 
@@ -80,17 +69,21 @@ function VideoGenerator({ segments }) {
                       <pre>{video.videoDescription}</pre>
                     </div>
                   )}
-                  {video.duration && (
-                    <p className="video-duration">Duración: {video.duration}</p>
-                  )}
+                  {video.duration && <p className="video-duration">Duración: {video.duration}</p>}
                 </div>
               ))}
             </div>
           )}
-          
+
           <div className="veo3-note">
-            <p><strong>Nota:</strong> Esto genera descripciones detalladas de video que pueden ser usadas con la API Veo 3 de Google cuando esté disponible.</p>
-            <p>Las descripciones incluyen ángulos de cámara, estados del personaje, tiempos de diálogo y continuidad de escena para una generación de video sin interrupciones.</p>
+            <p>
+              <strong>Nota:</strong> Esto genera descripciones detalladas de video que pueden ser
+              usadas con la API Veo 3 de Google cuando esté disponible.
+            </p>
+            <p>
+              Las descripciones incluyen ángulos de cámara, estados del personaje, tiempos de
+              diálogo y continuidad de escena para una generación de video sin interrupciones.
+            </p>
           </div>
         </div>
       )}

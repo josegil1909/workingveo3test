@@ -41,4 +41,4 @@ Each segment must follow this exact JSON structure with detailed descriptions to
 }
 ```
 
-Refer to the original `veo3-json-guidelines.md` for full field-level requirements. Modify this Plus version to introduce additional constraints or features unique to Standard Plus. 
+Refer to the original `veo3-json-guidelines.md` for full field-level requirements. Modify this Plus version to introduce additional constraints or features unique to Standard Plus.

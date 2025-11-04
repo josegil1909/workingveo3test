@@ -20,13 +20,16 @@ function VideoGeneratorPlus({ segments }) {
     }
   };
 
-  const getCostDisplay = () => `$${(segments.length * 8 * 0.75).toFixed(2)} (8 seconds × $0.75 per second)`;
+  const getCostDisplay = () =>
+    `$${(segments.length * 8 * 0.75).toFixed(2)} (8 seconds × $0.75 per second)`;
 
   return (
     <div className="video-generator">
       <h3>Video Generation (Standard Plus)</h3>
       <div className="video-info">
-        <p><strong>Ready to generate {segments.length} video segments</strong></p>
+        <p>
+          <strong>Ready to generate {segments.length} video segments</strong>
+        </p>
         <p className="video-cost">Estimated cost: {getCostDisplay()}</p>
       </div>
       <button className="generate-videos-button" onClick={handleGenerateVideos} disabled={loading}>
@@ -55,16 +58,20 @@ function VideoGeneratorPlus({ segments }) {
                       <pre>{video.videoDescription}</pre>
                     </div>
                   )}
-                  {video.duration && (
-                    <p className="video-duration">Duration: {video.duration}</p>
-                  )}
+                  {video.duration && <p className="video-duration">Duration: {video.duration}</p>}
                 </div>
               ))}
             </div>
           )}
           <div className="veo3-note">
-            <p><strong>Note:</strong> This generates detailed video descriptions that can be used with Google's Veo 3 API once available.</p>
-            <p>The descriptions include camera angles, character states, dialogue timing, and scene continuity for seamless video generation.</p>
+            <p>
+              <strong>Note:</strong> This generates detailed video descriptions that can be used
+              with Google's Veo 3 API once available.
+            </p>
+            <p>
+              The descriptions include camera angles, character states, dialogue timing, and scene
+              continuity for seamless video generation.
+            </p>
           </div>
         </div>
       )}
@@ -72,4 +79,4 @@ function VideoGeneratorPlus({ segments }) {
   );
 }
 
-export default VideoGeneratorPlus; 
+export default VideoGeneratorPlus;

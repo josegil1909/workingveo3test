@@ -42,6 +42,7 @@ Each segment must follow this exact JSON structure with detailed descriptions to
 ## Field Requirements and Guidelines
 
 ### 1. Segment Info
+
 - `segment_number`: Sequential number (1, 2, 3, etc.)
 - `total_segments`: Total count of segments for the complete ad
 - `overlap_instructions`: Specific instructions for seamless editing between segments
@@ -49,6 +50,7 @@ Each segment must follow this exact JSON structure with detailed descriptions to
 ### 2. Character Description (300+ words total)
 
 #### Physical (100+ words minimum)
+
 Must include:
 - Face shape and features
 - Hair color, style, texture, and length
@@ -62,6 +64,7 @@ Must include:
 - Energy level and movement style
 
 #### Clothing (100+ words minimum)
+
 Must include:
 - Every visible garment with specific details
 - Colors with exact shades (e.g., "navy blue", not just "blue")
@@ -74,6 +77,7 @@ Must include:
 - How clothes move with the character
 
 #### Current State (50+ words minimum)
+
 Specific to this segment:
 - Facial expression at this moment
 - Body position and posture
@@ -84,6 +88,7 @@ Specific to this segment:
 - Overall demeanor
 
 #### Voice Matching (50+ words minimum)
+
 Must include:
 - Tone for these specific lines
 - Speaking pace (words per minute)
@@ -97,6 +102,7 @@ Must include:
 ### 3. Scene Continuity
 
 #### Environment (150+ words minimum)
+
 Must be IDENTICAL across all segments:
 - Room type and dimensions
 - Wall colors with specific names/codes
@@ -109,6 +115,7 @@ Must be IDENTICAL across all segments:
 - Fixed elements that never change
 
 #### Camera Position
+
 Specific to this segment:
 - Shot type (close-up, medium, wide)
 - Camera angle (eye-level, slight above, etc.)
@@ -117,6 +124,7 @@ Specific to this segment:
 - Focus points
 
 #### Lighting State
+
 - Primary light source and direction
 - Shadow positions
 - Time of day consistency
@@ -124,6 +132,7 @@ Specific to this segment:
 - Overall brightness/mood
 
 #### Props in Frame
+
 - All visible objects
 - Product placement
 - Background elements
@@ -132,11 +141,13 @@ Specific to this segment:
 ### 4. Action Timeline
 
 #### Dialogue
+
 - Exact words spoken in this 8-second segment
 - Include pauses and emphasis
 - Natural break points
 
 #### Synchronized Actions
+
 - Actions that match dialogue timing
 - Gesture descriptions
 - Product handling
@@ -144,12 +155,14 @@ Specific to this segment:
 - Facial expression changes
 
 #### Product Interactions
+
 - How product is held/displayed
 - Demonstration actions
 - Product visibility
 - Key feature highlights
 
 #### Transition Prep
+
 - Exact position at segment end
 - Expression at cut point
 - Product/prop positions
@@ -158,6 +171,7 @@ Specific to this segment:
 ## Consistency Requirements
 
 ### Must Remain IDENTICAL Across All Segments:
+
 1. Character physical description (word-for-word)
 2. Clothing description (word-for-word)
 3. Environment description (word-for-word)
@@ -165,6 +179,7 @@ Specific to this segment:
 5. Character's core voice characteristics
 
 ### Can Vary Between Segments:
+
 1. Current state (expression, energy)
 2. Camera position and movement
 3. Specific vocal inflections for lines
@@ -172,6 +187,7 @@ Specific to this segment:
 5. Character position in space
 
 ## Quality Checklist for Each JSON:
+
 - [ ] Total character description is 300+ words
 - [ ] Physical description matches previous segments exactly
 - [ ] Clothing description matches previous segments exactly
@@ -183,6 +199,7 @@ Specific to this segment:
 - [ ] Voice characteristics maintain consistency
 
 ## Example Timing Breakdown:
+
 - 0:00-0:02 - Opening line with gesture
 - 0:02-0:04 - Product pickup/display
 - 0:04-0:06 - Key benefit statement
@@ -191,18 +208,21 @@ Specific to this segment:
 ## Special Instructions by Segment Type:
 
 ### Opening Segment (Segment 1):
+
 - Start mid-action or with hook
 - Establish character energy
 - Show environment clearly
 - Set the tone immediately
 
 ### Middle Segments:
+
 - Peak product interaction
 - Emotional high points
 - Clear demonstrations
 - Maintain energy flow
 
 ### Closing Segment:
+
 - Strong call-to-action
 - Memorable final position
 - Product in hero position

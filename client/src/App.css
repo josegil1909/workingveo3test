@@ -39,7 +39,7 @@
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {
@@ -105,7 +105,7 @@
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: 2rem;
 }
 
@@ -307,9 +307,15 @@
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.6; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .segment-preview h3 {
@@ -383,7 +389,7 @@
   border-color: #3498db;
   background: #f8f9fa;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .format-icon {
@@ -418,7 +424,7 @@
   background: #3498db;
   cursor: pointer;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .form-group input[type="range"]::-moz-range-thumb {
@@ -427,7 +433,7 @@
   background: #3498db;
   cursor: pointer;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Script Preview Styles */
@@ -681,7 +687,7 @@
   flex: 1;
   padding: 1rem;
   padding-left: 3.5rem;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-family: "Consolas", "Monaco", "Courier New", monospace;
   font-size: 0.9rem;
   line-height: 1.5;
   border: none;
@@ -700,7 +706,7 @@
   padding: 1rem 0.5rem;
   background: #e9ecef;
   border-right: 1px solid #ddd;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-family: "Consolas", "Monaco", "Courier New", monospace;
   font-size: 0.9rem;
   line-height: 1.5;
   color: #666;
@@ -791,7 +797,7 @@
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin: 2rem 0;
 }
 
@@ -830,7 +836,7 @@
 
 .segment-item:hover {
   border-color: #3498db;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .segment-item.dragging {
@@ -968,7 +974,7 @@
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin: 2rem 0;
 }
 
@@ -1171,7 +1177,7 @@
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: 2rem;
 }
 
@@ -1327,7 +1333,7 @@
   background: white;
   border-radius: 8px;
   padding: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .tab-button {
@@ -1362,7 +1368,7 @@
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .initial-segment-section,

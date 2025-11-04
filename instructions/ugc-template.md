@@ -5,6 +5,7 @@
 ### Required Character Profile Format (300+ words minimum):
 
 #### Physical Description (100+ words)
+
 - Hair: color, style, length, texture
 - Face: shape, skin tone, notable features
 - Eyes: color, shape, expression
@@ -13,6 +14,7 @@
 - Overall appearance and energy
 
 #### Clothing (100+ words)
+
 - Top: style, color, fit, material
 - Bottom: type, color, fit
 - Accessories: jewelry, watches, glasses
@@ -21,6 +23,7 @@
 - How clothes move with character
 
 #### Voice (50+ words)
+
 - Tone: warm, energetic, conversational
 - Pace: natural speaking rhythm
 - Inflections: emphasis patterns
@@ -29,6 +32,7 @@
 - Accent/dialect if applicable
 
 #### Personality (50+ words)
+
 - Energy level
 - Facial expressions
 - Hand gestures
@@ -92,6 +96,7 @@ Each segment must include:
 5. **Energy Match**: Consistent enthusiasm throughout
 
 ## Room/Background Options:
+
 - Modern kitchen (white, bright)
 - Cozy living room (warm tones)
 - Home office (professional)
@@ -99,6 +104,7 @@ Each segment must include:
 - Bedroom (soft, comfortable)
 
 ## Style Guidelines:
+
 - Authentic: Real person, not actor
 - Relatable: Everyday situations
 - Enthusiastic: Genuine excitement

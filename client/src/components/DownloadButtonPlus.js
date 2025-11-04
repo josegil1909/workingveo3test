@@ -29,4 +29,4 @@ function DownloadButtonPlus({ segments, metadata }) {
   );
 }
 
-export default DownloadButtonPlus; 
+export default DownloadButtonPlus;

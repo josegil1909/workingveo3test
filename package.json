@@ -10,10 +10,19 @@
     "build": "cd client && pnpm run build && cd .. && rm -rf build && cp -r client/build .",
     "start": "node server.js",
     "install-all": "pnpm install && cd client && pnpm install",
-    "heroku-postbuild": "cd client && pnpm install && pnpm run build"
+    "heroku-postbuild": "cd client && pnpm install && pnpm run build",
+    "format": "biome format --write . && pnpm run format:md",
+    "format:check": "biome format . && pnpm run format:md:check",
+    "format:md": "markdownlint-cli2 --fix \"*.md\" \"instructions/**/*.md\" \"!node_modules\" \"!client/node_modules\"",
+    "format:md:check": "markdownlint-cli2 \"*.md\" \"instructions/**/*.md\" \"!node_modules\" \"!client/node_modules\"",
+    "lint": "biome lint --write .",
+    "lint:check": "biome lint .",
+    "check": "biome check --write . && pnpm run format:md",
+    "check:ci": "biome ci . && pnpm run format:md:check"
   },
   "dependencies": {
     "@google-cloud/vertexai": "^1.9.0",
+    "@google/genai": "^1.28.0",
     "@google/generative-ai": "^0.21.0",
     "archiver": "^6.0.1",
     "axios": "^1.11.0",
@@ -25,7 +34,9 @@
     "pnpm": "^10.19.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "concurrently": "^8.2.2",
+    "markdownlint-cli2": "^0.18.1",
     "nodemon": "^3.0.1"
   }
 }

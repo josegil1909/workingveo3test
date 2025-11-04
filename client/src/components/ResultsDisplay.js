@@ -13,8 +13,8 @@ function ResultsDisplay({ results }) {
   useEffect(() => {
     if (segments && segments.length > 0 && currentIndex < segments.length) {
       const timer = setTimeout(() => {
-        setDisplayedSegments(prev => [...prev, segments[currentIndex]]);
-        setCurrentIndex(prev => prev + 1);
+        setDisplayedSegments((prev) => [...prev, segments[currentIndex]]);
+        setCurrentIndex((prev) => prev + 1);
       }, 500); // 500ms de demora entre segmentos
 
       return () => clearTimeout(timer);
@@ -42,15 +42,21 @@ function ResultsDisplay({ results }) {
 
   return (
     <div className="results-container">
-  <h2>Segmentos generados</h2>
+      <h2>Segmentos generados</h2>
 
       {/* Mostrar configuración usada */}
       {settings && <SettingsDisplay settings={settings} />}
 
       <div className="metadata">
-        <p><strong>Total de segmentos:</strong> {metadata.totalSegments}</p>
-        <p><strong>Duración estimada:</strong> {metadata.estimatedDuration} segundos</p>
-        <p><strong>ID de personaje:</strong> {metadata.characterId}</p>
+        <p>
+          <strong>Total de segmentos:</strong> {metadata.totalSegments}
+        </p>
+        <p>
+          <strong>Duración estimada:</strong> {metadata.estimatedDuration} segundos
+        </p>
+        <p>
+          <strong>ID de personaje:</strong> {metadata.characterId}
+        </p>
         {currentIndex < segments.length && (
           <p className="generation-progress">
             <strong>Generando:</strong> {currentIndex + 1} de {segments.length} segmentos...

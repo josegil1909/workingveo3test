@@ -15,7 +15,7 @@ const router = express.Router();
 
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000,
-  max: 10
+  max: 10,
 });
 
 router.use(limiter);
@@ -27,9 +27,9 @@ async function ensureDir(dirPath) {
 router.post('/generate-plus', async (req, res) => {
   console.log('[Generate Plus] Request received:', {
     bodyKeys: Object.keys(req.body),
-    scriptLength: req.body.script?.length || 0
+    scriptLength: req.body.script?.length || 0,
   });
-  
+
   try {
     const {
       script,
@@ -52,13 +52,13 @@ router.post('/generate-plus', async (req, res) => {
       ethnicity,
       characterFeatures,
       clothingDetails,
-      accentRegion
+      accentRegion,
     } = req.body;
 
     if (!script || script.trim().length < 50) {
       console.log('[Generate Plus] Validation failed: Script too short');
       return res.status(400).json({
-        error: 'Script must be at least 50 characters long'
+        error: 'Script must be at least 50 characters long',
       });
     }
 
@@ -83,7 +83,7 @@ router.post('/generate-plus', async (req, res) => {
       ethnicity,
       characterFeatures,
       clothingDetails,
-      accentRegion
+      accentRegion,
     };
 
     const result = await OpenAIServicePlus.generateSegments(params);
@@ -102,24 +102,24 @@ router.post('/generate-plus', async (req, res) => {
 
     console.log('[Generate Plus] Success:', {
       segments: result.segments.length,
-      characterId: result.metadata.characterId
+      characterId: result.metadata.characterId,
     });
 
     res.json({
       success: true,
       segments: result.segments,
-      metadata: result.metadata
+      metadata: result.metadata,
     });
   } catch (error) {
     console.error('[Generate Plus] Error:', {
       message: error.message,
       stack: error.stack,
-      response: error.response?.data
+      response: error.response?.data,
     });
     res.status(500).json({
       error: 'Failed to generate segments (plus)',
       message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.response?.data : undefined
+      details: process.env.NODE_ENV === 'development' ? error.response?.data : undefined,
     });
   }
 });
@@ -136,13 +136,16 @@ router.post('/download-plus', async (req, res) => {
 
     segments.forEach((segment, index) => {
       archive.append(JSON.stringify(segment, null, 2), {
-        name: `segment_plus_${(index + 1).toString().padStart(2, '0')}.json`
+        name: `segment_plus_${(index + 1).toString().padStart(2, '0')}.json`,
       });
     });
 
-    archive.append('Standard Plus Instructions for Veo 3:\n1. Upload each JSON in order\n2. Generate 8-second clips\n3. Edit together with overlaps', {
-      name: 'README_PLUS.txt'
-    });
+    archive.append(
+      'Standard Plus Instructions for Veo 3:\n1. Upload each JSON in order\n2. Generate 8-second clips\n3. Edit together with overlaps',
+      {
+        name: 'README_PLUS.txt',
+      }
+    );
 
     archive.finalize();
   } catch (error) {
@@ -158,7 +161,7 @@ router.post('/generate-videos-plus', async (req, res) => {
 
     if (!segments || !Array.isArray(segments) || segments.length === 0) {
       return res.status(400).json({
-        error: 'No segments provided for video generation'
+        error: 'No segments provided for video generation',
       });
     }
 
@@ -168,15 +171,15 @@ router.post('/generate-videos-plus', async (req, res) => {
       success: true,
       videos: result.videos,
       service: 'gemini',
-      message: result.message || 'Video generation initiated successfully (plus)'
+      message: result.message || 'Video generation initiated successfully (plus)',
     });
   } catch (error) {
     console.error('[Generate Videos Plus] Error:', error);
     res.status(500).json({
       error: 'Failed to generate videos (plus)',
-      message: error.message
+      message: error.message,
     });
   }
 });
 
-export default router; 
+export default router;

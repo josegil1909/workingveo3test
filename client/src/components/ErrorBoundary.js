@@ -16,28 +16,34 @@ class ErrorBoundary extends React.Component {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     this.setState({
       error: error,
-      errorInfo: errorInfo
+      errorInfo: errorInfo,
     });
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ 
-          padding: '20px', 
-          margin: '20px', 
-          border: '2px solid red',
-          borderRadius: '8px',
-          backgroundColor: '#fee'
-        }}>
+        <div
+          style={{
+            padding: '20px',
+            margin: '20px',
+            border: '2px solid red',
+            borderRadius: '8px',
+            backgroundColor: '#fee',
+          }}
+        >
           <h2>Something went wrong!</h2>
           <details style={{ whiteSpace: 'pre-wrap' }}>
             <summary>Click for error details</summary>
-            <p><strong>Error:</strong> {this.state.error && this.state.error.toString()}</p>
-            <p><strong>Component Stack:</strong></p>
+            <p>
+              <strong>Error:</strong> {this.state.error && this.state.error.toString()}
+            </p>
+            <p>
+              <strong>Component Stack:</strong>
+            </p>
             <pre>{this.state.errorInfo && this.state.errorInfo.componentStack}</pre>
           </details>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             style={{
               marginTop: '10px',
@@ -46,7 +52,7 @@ class ErrorBoundary extends React.Component {
               color: 'white',
               border: 'none',
               borderRadius: '4px',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             Reload Page

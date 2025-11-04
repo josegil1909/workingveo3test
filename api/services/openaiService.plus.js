@@ -17,7 +17,7 @@ const INDOOR_LOCATIONS = new Set([
   'hallway',
   'entryway',
   'laundry room',
-  'walk-in closet'
+  'walk-in closet',
 ]);
 
 function contains(text = '', needle) {
@@ -40,13 +40,21 @@ function sanitizeSegmentForPlausibility(segment) {
     let fixedActions = actions;
 
     // Prevent impossible indoor objects
-    if (contains(props, 'solar panel') || contains(env, 'solar panel') || contains(actions, 'solar panel')) {
+    if (
+      contains(props, 'solar panel') ||
+      contains(env, 'solar panel') ||
+      contains(actions, 'solar panel')
+    ) {
       fixedProps = fixedProps.replace(/solar panels?/gi, 'solar panel monitoring display');
       fixedEnv = fixedEnv.replace(/solar panels?/gi, 'solar panel monitoring display');
       fixedActions = fixedActions.replace(/solar panels?/gi, 'monitoring display');
     }
 
-    if (contains(props, 'generator') || contains(env, 'generator') || contains(actions, 'generator')) {
+    if (
+      contains(props, 'generator') ||
+      contains(env, 'generator') ||
+      contains(actions, 'generator')
+    ) {
       // Keep generator out of indoor rooms; reference controls or mention only
       fixedProps = fixedProps.replace(/generator(s)?/gi, 'energy system status display');
       fixedEnv = fixedEnv.replace(/generator(s)?/gi, 'energy system status display');
@@ -83,13 +91,12 @@ class OpenAIServicePlus {
   }
 
   async loadTemplate(format = 'standard') {
-    const filename = format === 'enhanced' 
-      ? 'veo3-enhanced-continuity-plus.md' 
-      : 'veo3-json-guidelines-plus.md';
-    
+    const filename =
+      format === 'enhanced' ? 'veo3-enhanced-continuity-plus.md' : 'veo3-json-guidelines-plus.md';
+
     const templatePath = path.join(__dirname, '../../instructions/', filename);
     console.log(`[OpenAI Plus] Loading template: ${filename}`);
-    
+
     return await fs.readFile(templatePath, 'utf8');
   }
 
@@ -97,17 +104,17 @@ class OpenAIServicePlus {
     console.log('[OpenAI Plus] Starting generation with format:', params.jsonFormat || 'standard');
     console.log('[OpenAI Plus] Setting mode:', params.settingMode || 'single');
     const template = await this.loadTemplate(params.jsonFormat);
-    
+
     const scriptSegments = await this.splitScript(params.script);
     console.log('[OpenAI Plus] Script split into', scriptSegments.length, 'segments');
-    
+
     let locations = [];
     if (params.settingMode === 'ai-inspired') {
       locations = await this.inferLocationsFromScript({
         script: params.script,
         desiredCount: scriptSegments.length,
         product: params.product,
-        style: params.style
+        style: params.style,
       });
     } else if (params.settingMode === 'single') {
       locations = Array(scriptSegments.length).fill(params.room);
@@ -117,13 +124,16 @@ class OpenAIServicePlus {
         locations.push(locations[locations.length - 1] || 'living room');
       }
     }
-    
+
     console.log('[OpenAI Plus] Locations resolved:', locations);
-    
+
     console.log('[OpenAI Plus] Generating base descriptions...');
-    const baseDescriptions = await this.generateBaseDescriptions({ ...params, locations }, template);
+    const baseDescriptions = await this.generateBaseDescriptions(
+      { ...params, locations },
+      template
+    );
     console.log('[OpenAI Plus] Base descriptions generated');
-    
+
     const segments = [];
     console.log('[OpenAI Plus] Generating individual segments...');
     for (let i = 0; i < scriptSegments.length; i++) {
@@ -138,18 +148,18 @@ class OpenAIServicePlus {
         currentLocation: locations[i],
         previousLocation: i > 0 ? locations[i - 1] : null,
         nextLocation: i < locations.length - 1 ? locations[i + 1] : null,
-        ...params
+        ...params,
       });
       segments.push(sanitizeSegmentForPlausibility(segment));
     }
-    
+
     return {
       segments,
       metadata: {
         totalSegments: segments.length,
         estimatedDuration: segments.length * 8,
-        characterId: this.generateCharacterId(params)
-      }
+        characterId: this.generateCharacterId(params),
+      },
     };
   }
 
@@ -158,32 +168,32 @@ class OpenAIServicePlus {
     const minWordsFor6Seconds = 15;
     const targetWordsFor8Seconds = 20;
     const maxWordsFor8Seconds = 22;
-    
+
     console.log('[OpenAI Plus] Script splitting parameters:', {
       minWords: minWordsFor6Seconds,
       targetWords: targetWordsFor8Seconds,
-      maxWords: maxWordsFor8Seconds
+      maxWords: maxWordsFor8Seconds,
     });
-    
+
     const sentences = script.match(/[^.!?]+[.!?]+/g) || [script];
-    
+
     const rawSegments = [];
     let currentSegment = '';
     let currentWordCount = 0;
-    
+
     for (let i = 0; i < sentences.length; i++) {
       const sentence = sentences[i].trim();
       const sentenceWords = sentence.split(/\s+/).length;
-      
+
       if (currentSegment === '') {
         currentSegment = sentence;
         currentWordCount = sentenceWords;
-        
+
         while (currentWordCount < minWordsFor6Seconds && i + 1 < sentences.length) {
           i++;
           const nextSentence = sentences[i].trim();
           const nextWords = nextSentence.split(/\s+/).length;
-          
+
           if (currentWordCount + nextWords > maxWordsFor8Seconds) {
             if (currentWordCount < minWordsFor6Seconds) {
               currentSegment += ' ' + nextSentence;
@@ -197,32 +207,34 @@ class OpenAIServicePlus {
             currentWordCount += nextWords;
           }
         }
-        
+
         rawSegments.push(currentSegment);
         currentSegment = '';
         currentWordCount = 0;
       }
     }
-    
+
     const finalSegments = [];
-    
+
     for (let i = 0; i < rawSegments.length; i++) {
       const segment = rawSegments[i];
       const wordCount = segment.split(/\s+/).length;
       const duration = wordCount / wordsPerSecond;
-      
-      console.log(`[OpenAI Plus] Raw segment ${i + 1}: ${wordCount} words, ~${duration.toFixed(1)}s speaking time`);
-      
+
+      console.log(
+        `[OpenAI Plus] Raw segment ${i + 1}: ${wordCount} words, ~${duration.toFixed(1)}s speaking time`
+      );
+
       if (wordCount < minWordsFor6Seconds && i < rawSegments.length - 1) {
         const nextSegment = rawSegments[i + 1];
         const nextWords = nextSegment.split(/\s+/).length;
-        
+
         if (nextWords > minWordsFor6Seconds) {
           const nextSentences = nextSegment.match(/[^.!?]+[.!?]+/g) || [nextSegment];
           if (nextSentences.length > 1) {
             const borrowedSentence = nextSentences[0];
             const borrowedWords = borrowedSentence.split(/\s+/).length;
-            
+
             if (wordCount + borrowedWords <= maxWordsFor8Seconds) {
               finalSegments.push(segment + ' ' + borrowedSentence);
               rawSegments[i + 1] = nextSentences.slice(1).join(' ');
@@ -230,11 +242,11 @@ class OpenAIServicePlus {
             }
           }
         }
-        
+
         if (i < rawSegments.length - 1) {
           const merged = segment + ' ' + rawSegments[i + 1];
           const mergedWords = merged.split(/\s+/).length;
-          
+
           if (mergedWords <= 30) {
             finalSegments.push(merged);
             i++;
@@ -242,10 +254,10 @@ class OpenAIServicePlus {
           }
         }
       }
-      
+
       finalSegments.push(segment);
     }
-    
+
     console.log('[OpenAI Plus] Final segment distribution:');
     finalSegments.forEach((segment, i) => {
       const wordCount = segment.split(/\s+/).length;
@@ -255,7 +267,7 @@ class OpenAIServicePlus {
         console.warn(`  ⚠️  Segment ${i + 1} is under 6 seconds!`);
       }
     });
-    
+
     return finalSegments;
   }
 
@@ -267,21 +279,23 @@ class OpenAIServicePlus {
         messages: [
           {
             role: 'system',
-            content: 'You analyze UGC scripts and propose realistic filming locations per segment. Do NOT include subtitles, on-screen text, captions, SFX/sound effects, background music, or soundtrack cues. Return only JSON.'
+            content:
+              'You analyze UGC scripts and propose realistic filming locations per segment. Do NOT include subtitles, on-screen text, captions, SFX/sound effects, background music, or soundtrack cues. Return only JSON.',
           },
           {
             role: 'user',
-            content: `Script:\n${script}\n\nProduct: ${product || 'N/A'}\nStyle: ${style || 'casual'}\nSegments Needed: ${desiredCount}\n\nReturn a JSON object with a single key \'locations\' that is an array of ${desiredCount} plain strings. Choose varied, practical locations that fit the script content (e.g., living room, kitchen, office, street, store aisle, doctor's office, gym, car interior, park bench). No repeats unless clearly justified by the script. No studio terms, no virtual sets, no VFX.`
-          }
+            content: `Script:\n${script}\n\nProduct: ${product || 'N/A'}\nStyle: ${style || 'casual'}\nSegments Needed: ${desiredCount}\n\nReturn a JSON object with a single key \'locations\' that is an array of ${desiredCount} plain strings. Choose varied, practical locations that fit the script content (e.g., living room, kitchen, office, street, store aisle, doctor's office, gym, car interior, park bench). No repeats unless clearly justified by the script. No studio terms, no virtual sets, no VFX.`,
+          },
         ],
         response_format: { type: 'json_object' },
         temperature: 0.4,
-        max_tokens: 500
+        max_tokens: 500,
       });
       const parsed = JSON.parse(response.choices[0].message.content);
       let locations = Array.isArray(parsed.locations) ? parsed.locations : [];
-      locations = locations.map(l => String(l).toLowerCase());
-      while (locations.length < desiredCount) locations.push(locations[locations.length - 1] || 'living room');
+      locations = locations.map((l) => String(l).toLowerCase());
+      while (locations.length < desiredCount)
+        locations.push(locations[locations.length - 1] || 'living room');
       if (locations.length > desiredCount) locations = locations.slice(0, desiredCount);
       return locations;
     } catch (error) {
@@ -298,25 +312,30 @@ class OpenAIServicePlus {
         messages: [
           {
             role: 'system',
-            content: 'You are a creative TV ad director. Propose cinematic yet practical camera styles per segment (e.g., static handheld, slow push-in, subtle orbit, dynamic handheld, POV selfie). Do NOT include subtitles, on-screen text, captions, SFX/sound effects, or music. Return only JSON.'
+            content:
+              'You are a creative TV ad director. Propose cinematic yet practical camera styles per segment (e.g., static handheld, slow push-in, subtle orbit, dynamic handheld, POV selfie). Do NOT include subtitles, on-screen text, captions, SFX/sound effects, or music. Return only JSON.',
           },
           {
             role: 'user',
-            content: `Script:\n${script}\n\nProduct: ${product || 'N/A'}\nStyle: ${style || 'casual'}\nSegments Needed: ${desiredCount}\n\nReturn a JSON object with a single key \'camera\' that is an array of ${desiredCount} plain strings chosen from: ["static-handheld","slow-push","orbit","dynamic","pov-selfie"]. Choose creative, varied styles aligned to content.`
-          }
+            content: `Script:\n${script}\n\nProduct: ${product || 'N/A'}\nStyle: ${style || 'casual'}\nSegments Needed: ${desiredCount}\n\nReturn a JSON object with a single key \'camera\' that is an array of ${desiredCount} plain strings chosen from: ["static-handheld","slow-push","orbit","dynamic","pov-selfie"]. Choose creative, varied styles aligned to content.`,
+          },
         ],
         response_format: { type: 'json_object' },
         temperature: 0.5,
-        max_tokens: 400
+        max_tokens: 400,
       });
       const parsed = JSON.parse(response.choices[0].message.content);
       let camera = Array.isArray(parsed.camera) ? parsed.camera : [];
-      camera = camera.map(c => String(c));
-      while (camera.length < desiredCount) camera.push(camera[camera.length - 1] || 'static-handheld');
+      camera = camera.map((c) => String(c));
+      while (camera.length < desiredCount)
+        camera.push(camera[camera.length - 1] || 'static-handheld');
       if (camera.length > desiredCount) camera = camera.slice(0, desiredCount);
       return camera;
     } catch (error) {
-      console.error('[OpenAI Plus] Camera inference failed, falling back to static-handheld:', error);
+      console.error(
+        '[OpenAI Plus] Camera inference failed, falling back to static-handheld:',
+        error
+      );
       return Array(desiredCount).fill('static-handheld');
     }
   }
@@ -326,14 +345,14 @@ class OpenAIServicePlus {
     try {
       const isEnhanced = params.jsonFormat === 'enhanced';
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4o",
+        model: 'gpt-4o',
         messages: [
           {
-            role: "system",
-            content: `${template}\n\nGenerate the base descriptions that will remain IDENTICAL across all segments. Follow the exact word count requirements. Return ONLY valid JSON. Absolutely forbid: subtitles, on-screen text, captions, SFX/sound effects, background music, soundtrack cues.`
+            role: 'system',
+            content: `${template}\n\nGenerate the base descriptions that will remain IDENTICAL across all segments. Follow the exact word count requirements. Return ONLY valid JSON. Absolutely forbid: subtitles, on-screen text, captions, SFX/sound effects, background music, soundtrack cues.`,
           },
           {
-            role: "user",
+            role: 'user',
             content: `Create base descriptions for:
 Age: ${params.ageRange}
 Gender: ${params.gender}
@@ -361,14 +380,14 @@ Return a JSON object with these exact keys:
   "productHandling": "[50+ words - How character naturally handles/displays the product based on ${params.productStyle} style]"
 }
 
-Hard rules: Do NOT reference subtitles, captions, SFX, or music in any field.`
-          }
+Hard rules: Do NOT reference subtitles, captions, SFX, or music in any field.`,
+          },
         ],
-        response_format: { type: "json_object" },
+        response_format: { type: 'json_object' },
         temperature: 0.3,
-        max_tokens: 5000
+        max_tokens: 5000,
       });
-      
+
       console.log('[OpenAI Plus] API response received');
       const parsed = JSON.parse(response.choices[0].message.content);
       console.log('[OpenAI Plus] Base descriptions parsed successfully');
@@ -391,21 +410,21 @@ Hard rules: Do NOT reference subtitles, captions, SFX, or music in any field.`
             script: params.script,
             desiredCount: params.totalSegments,
             product: params.product,
-            style: params.style
+            style: params.style,
           });
         }
         cameraStyle = params._inferredCamera[params.segmentNumber - 1] || 'static-handheld';
       }
 
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4o",
+        model: 'gpt-4o',
         messages: [
           {
-            role: "system",
-            content: `${params.template}\n\nGenerate a Veo 3 JSON segment following the exact structure. Use the provided base descriptions WORD-FOR-WORD. Do not include or imply subtitles, on-screen text, captions, SFX/sound effects, background music, or soundtrack cues.`
+            role: 'system',
+            content: `${params.template}\n\nGenerate a Veo 3 JSON segment following the exact structure. Use the provided base descriptions WORD-FOR-WORD. Do not include or imply subtitles, on-screen text, captions, SFX/sound effects, background music, or soundtrack cues.`,
           },
           {
-            role: "user",
+            role: 'user',
             content: `Create segment ${params.segmentNumber} of ${params.totalSegments}:
 
 Dialogue for this segment: "${params.scriptPart}"
@@ -451,14 +470,14 @@ Generate the complete JSON with:
 4. action_timeline (${isEnhanced ? 'with synchronized_actions, micro_expressions, breathing_rhythm' : 'synchronized with dialogue'})
 5. Include natural movement/transition if location changes
 
-Hard rule: No subtitles/on-screen text/captions/SFX/music in any field.`
-          }
+Hard rule: No subtitles/on-screen text/captions/SFX/music in any field.`,
+          },
         ],
-        response_format: { type: "json_object" },
+        response_format: { type: 'json_object' },
         temperature: 0.5,
-        max_tokens: 5000
+        max_tokens: 5000,
       });
-      
+
       const parsed = JSON.parse(response.choices[0].message.content);
       return parsed;
     } catch (error) {
@@ -473,10 +492,10 @@ Hard rule: No subtitles/on-screen text/captions/SFX/music in any field.`
 
   getEnergyLevel(energyArc, segmentNumber, totalSegments) {
     const progress = segmentNumber / totalSegments;
-    
+
     switch (energyArc) {
       case 'building':
-        return `${Math.round(60 + (35 * progress))}% - Building from calm to excited`;
+        return `${Math.round(60 + 35 * progress)}% - Building from calm to excited`;
       case 'problem-solution':
         if (progress < 0.3) return '70% - Concerned, explaining problem';
         if (progress < 0.7) return '60% - Working through solution';
@@ -491,4 +510,4 @@ Hard rule: No subtitles/on-screen text/captions/SFX/music in any field.`
   }
 }
 
-export default new OpenAIServicePlus(); 
+export default new OpenAIServicePlus();

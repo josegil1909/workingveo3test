@@ -5,4 +5,4 @@ function ResultsDisplayPlus({ results }) {
   return <ResultsDisplay results={results} />;
 }
 
-export default ResultsDisplayPlus; 
+export default ResultsDisplayPlus;

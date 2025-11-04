@@ -3,7 +3,7 @@ import { downloadSegments } from '../api/client';
 
 function DownloadButton({ segments, metadata }) {
   const [showFormats, setShowFormats] = useState(false);
-  
+
   const handleDownload = async (format = 'zip') => {
     try {
       if (format === 'zip') {
@@ -24,9 +24,9 @@ function DownloadButton({ segments, metadata }) {
     const data = {
       metadata: metadata || {},
       segments: segments,
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
     };
-    
+
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -47,11 +47,11 @@ function DownloadButton({ segments, metadata }) {
       'Word Count',
       'Character State',
       'Location',
-      'Camera Position'
+      'Camera Position',
     ];
-    
+
     // Convert segments to CSV rows
-    const rows = segments.map(segment => {
+    const rows = segments.map((segment) => {
       return [
         segment.segment_info?.segment_number || '',
         segment.segment_info?.duration || '00:00-00:08',
@@ -59,15 +59,13 @@ function DownloadButton({ segments, metadata }) {
         segment.action_timeline?.dialogue?.split(/\s+/).length || 0,
         `"${(segment.character_description?.current_state || '').replace(/"/g, '""')}"`,
         segment.segment_info?.location || '',
-        segment.scene_continuity?.camera_position || ''
+        segment.scene_continuity?.camera_position || '',
       ];
     });
-    
+
     // Combine headers and rows
-    const csvContent = [headers, ...rows]
-      .map(row => row.join(','))
-      .join('\n');
-    
+    const csvContent = [headers, ...rows].map((row) => row.join(',')).join('\n');
+
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -102,7 +100,9 @@ function DownloadButton({ segments, metadata }) {
   <p>Generated: ${new Date().toLocaleString()}</p>
   <p>Total Segments: ${segments.length}</p>
   
-  ${segments.map(segment => `
+  ${segments
+    .map(
+      (segment) => `
     <div class="segment">
       <div class="segment-header">
         <h2>Segment ${segment.segment_info?.segment_number || 'N/A'}</h2>
@@ -127,23 +127,29 @@ function DownloadButton({ segments, metadata }) {
         <span class="field-label">Camera:</span> ${segment.scene_continuity?.camera_position || 'Not specified'}
       </div>
       
-      ${segment.action_timeline?.synchronized_actions ? `
+      ${
+        segment.action_timeline?.synchronized_actions
+          ? `
         <div class="field">
           <span class="field-label">Actions:</span>
           <p>${segment.action_timeline.synchronized_actions}</p>
         </div>
-      ` : ''}
+      `
+          : ''
+      }
     </div>
-  `).join('')}
+  `
+    )
+    .join('')}
 </body>
 </html>
     `;
-    
+
     const printWindow = window.open('', '_blank');
     printWindow.document.write(pdfContent);
     printWindow.document.close();
     printWindow.focus();
-    
+
     setTimeout(() => {
       printWindow.print();
     }, 250);
@@ -151,16 +157,13 @@ function DownloadButton({ segments, metadata }) {
 
   return (
     <div className="download-section">
-      <button 
-        className="download-button"
-        onClick={() => setShowFormats(!showFormats)}
-      >
+      <button className="download-button" onClick={() => setShowFormats(!showFormats)}>
         📥 Descargar segmentos
       </button>
-      
+
       {showFormats && (
         <div className="download-formats">
-          <button 
+          <button
             className="format-button"
             onClick={() => handleDownload('zip')}
             title="Descargar como ZIP con archivos JSON individuales"
@@ -168,8 +171,8 @@ function DownloadButton({ segments, metadata }) {
             <span className="format-icon">📦</span>
             Archivo ZIP
           </button>
-          
-          <button 
+
+          <button
             className="format-button"
             onClick={() => handleDownload('json')}
             title="Descargar como archivo JSON"
@@ -177,8 +180,8 @@ function DownloadButton({ segments, metadata }) {
             <span className="format-icon">📄</span>
             Archivo JSON
           </button>
-          
-          <button 
+
+          <button
             className="format-button"
             onClick={() => handleDownload('csv')}
             title="Descargar como CSV para hojas de cálculo"
@@ -186,8 +189,8 @@ function DownloadButton({ segments, metadata }) {
             <span className="format-icon">📊</span>
             Archivo CSV
           </button>
-          
-          <button 
+
+          <button
             className="format-button"
             onClick={() => handleDownload('pdf')}
             title="Imprimir/Guardar como PDF"

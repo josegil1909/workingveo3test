@@ -24,7 +24,7 @@ function ScriptFormPlus({ onSubmit, loading }) {
     ethnicity: '',
     characterFeatures: '',
     clothingDetails: '',
-    accentRegion: 'neutral-american'
+    accentRegion: 'neutral-american',
   });
 
   const [scriptPreview, setScriptPreview] = useState([]);
@@ -47,7 +47,7 @@ function ScriptFormPlus({ onSubmit, loading }) {
     if (type === 'checkbox') {
       setFormData({
         ...formData,
-        [name]: checked
+        [name]: checked,
       });
     } else if (name === 'settingMode') {
       let defaultLocations = [];
@@ -62,12 +62,12 @@ function ScriptFormPlus({ onSubmit, loading }) {
       setFormData({
         ...formData,
         [name]: value,
-        locations: defaultLocations
+        locations: defaultLocations,
       });
     } else {
       setFormData({
         ...formData,
-        [name]: value
+        [name]: value,
       });
     }
   };
@@ -77,7 +77,7 @@ function ScriptFormPlus({ onSubmit, loading }) {
     newLocations[index] = value;
     setFormData({
       ...formData,
-      locations: newLocations
+      locations: newLocations,
     });
   };
 
@@ -132,7 +132,7 @@ function ScriptFormPlus({ onSubmit, loading }) {
         segments.push({
           text: currentSegment,
           wordCount: currentWordCount,
-          duration: Math.round((currentWordCount / 2.5) * 10) / 10
+          duration: Math.round((currentWordCount / 2.5) * 10) / 10,
         });
         currentSegment = '';
         currentWordCount = 0;
@@ -153,16 +153,16 @@ function ScriptFormPlus({ onSubmit, loading }) {
     delete settingsToSave.script;
     delete settingsToSave.showPreview;
 
-  const settingName = prompt('Ingresa un nombre para estas configuraciones (Estándar Plus):');
+    const settingName = prompt('Ingresa un nombre para estas configuraciones (Estándar Plus):');
     if (settingName) {
       const existingSaved = [...savedSettings];
       const newSetting = {
         name: settingName,
         date: new Date().toLocaleDateString(),
-        settings: settingsToSave
+        settings: settingsToSave,
       };
 
-      const existingIndex = existingSaved.findIndex(s => s.name === settingName);
+      const existingIndex = existingSaved.findIndex((s) => s.name === settingName);
       if (existingIndex >= 0) {
         if (window.confirm(`La configuración "${settingName}" ya existe. ¿Sobrescribir?`)) {
           existingSaved[existingIndex] = newSetting;
@@ -175,26 +175,26 @@ function ScriptFormPlus({ onSubmit, loading }) {
 
       localStorage.setItem('ugcScriptSettingsPlus', JSON.stringify(existingSaved));
       setSavedSettings(existingSaved);
-  alert(`¡Configuración "${settingName}" guardada exitosamente!`);
+      alert(`¡Configuración "${settingName}" guardada exitosamente!`);
     }
   };
 
   const loadSettings = (settingName) => {
-    const setting = savedSettings.find(s => s.name === settingName);
+    const setting = savedSettings.find((s) => s.name === settingName);
     if (setting) {
       setFormData({
         ...formData,
         ...setting.settings,
         script: formData.script,
-        showPreview: false
+        showPreview: false,
       });
-  alert(`¡Configuración "${settingName}" cargada!`);
+      alert(`¡Configuración "${settingName}" cargada!`);
     }
   };
 
   const deleteSettings = (settingName) => {
-  if (window.confirm(`¿Eliminar configuración "${settingName}"?`)) {
-      const updated = savedSettings.filter(s => s.name !== settingName);
+    if (window.confirm(`¿Eliminar configuración "${settingName}"?`)) {
+      const updated = savedSettings.filter((s) => s.name !== settingName);
       localStorage.setItem('ugcScriptSettingsPlus', JSON.stringify(updated));
       setSavedSettings(updated);
     }
@@ -205,11 +205,7 @@ function ScriptFormPlus({ onSubmit, loading }) {
       <div className="settings-controls">
         <h3>Gestión de configuraciones (Estándar Plus)</h3>
         <div className="settings-buttons">
-          <button
-            type="button"
-            className="settings-button save-button"
-            onClick={saveSettings}
-          >
+          <button type="button" className="settings-button save-button" onClick={saveSettings}>
             💾 Guardar configuraciones actuales
           </button>
 
@@ -244,7 +240,11 @@ function ScriptFormPlus({ onSubmit, loading }) {
       </div>
 
       <div className="form-note">
-        <p><strong>Ubicaciones y cámara inspiradas en IA:</strong> Selecciona "AI Inspired" para que el sistema infiera ubicaciones realistas y dirección de cámara creativa por segmento según tu guion. Nota: No se generan subtítulos, efectos de sonido o indicaciones musicales.</p>
+        <p>
+          <strong>Ubicaciones y cámara inspiradas en IA:</strong> Selecciona "AI Inspired" para que
+          el sistema infiera ubicaciones realistas y dirección de cámara creativa por segmento según
+          tu guion. Nota: No se generan subtítulos, efectos de sonido o indicaciones musicales.
+        </p>
       </div>
 
       <div className="form-group">
@@ -259,12 +259,15 @@ function ScriptFormPlus({ onSubmit, loading }) {
           minLength={50}
         />
         <p className="form-help-text">
-          Cada segmento necesita entre 15 y 22 palabras (6-8 segundos de narración). Las oraciones cortas se combinarán automáticamente.
+          Cada segmento necesita entre 15 y 22 palabras (6-8 segundos de narración). Las oraciones
+          cortas se combinarán automáticamente.
         </p>
       </div>
 
       <div className="form-group">
-        <label htmlFor="targetWordsPerSegment">Palabras por segmento (Objetivo: {formData.targetWordsPerSegment})</label>
+        <label htmlFor="targetWordsPerSegment">
+          Palabras por segmento (Objetivo: {formData.targetWordsPerSegment})
+        </label>
         <input
           type="range"
           id="targetWordsPerSegment"
@@ -276,7 +279,8 @@ function ScriptFormPlus({ onSubmit, loading }) {
           step="1"
         />
         <p className="form-help-text">
-          Ajusta el número de palabras objetivo por segmento de 8 segundos (15 = ritmo más lento, 30 = más rápido)
+          Ajusta el número de palabras objetivo por segmento de 8 segundos (15 = ritmo más lento, 30
+          = más rápido)
         </p>
       </div>
 
@@ -296,7 +300,8 @@ function ScriptFormPlus({ onSubmit, loading }) {
         <div className="script-preview">
           <h3>Vista previa del guion - {scriptPreview.length} segmentos</h3>
           <p className="preview-info">
-            Duración total: ~{scriptPreview.reduce((sum, seg) => sum + seg.duration, 0).toFixed(1)} segundos
+            Duración total: ~{scriptPreview.reduce((sum, seg) => sum + seg.duration, 0).toFixed(1)}{' '}
+            segundos
           </p>
           <div className="preview-segments">
             {scriptPreview.map((segment, index) => (
@@ -307,9 +312,7 @@ function ScriptFormPlus({ onSubmit, loading }) {
                     {segment.wordCount} palabras | ~{segment.duration}s
                   </span>
                 </div>
-                <div className="preview-segment-text">
-                  {segment.text}
-                </div>
+                <div className="preview-segment-text">{segment.text}</div>
               </div>
             ))}
           </div>
@@ -360,7 +363,10 @@ function ScriptFormPlus({ onSubmit, loading }) {
           <option value="authoritative-confident">Autoritaria y confiada</option>
           <option value="youthful-playful">Juvenil y juguetona</option>
         </select>
-        <p className="form-help-text">Establece el tono vocal y el estilo de entrega para mantener la coherencia en todos los segmentos</p>
+        <p className="form-help-text">
+          Establece el tono vocal y el estilo de entrega para mantener la coherencia en todos los
+          segmentos
+        </p>
       </div>
 
       <div className="form-group">
@@ -375,14 +381,21 @@ function ScriptFormPlus({ onSubmit, loading }) {
           max="100"
           step="5"
         />
-        <p className="form-help-text">Nivel de energía base para la entrega (50% = calmado, 100% = muy entusiasta)</p>
+        <p className="form-help-text">
+          Nivel de energía base para la entrega (50% = calmado, 100% = muy entusiasta)
+        </p>
       </div>
 
       <div className="form-section">
         <h3>Detalles avanzados del personaje</h3>
         <div className="form-group">
           <label htmlFor="ethnicity">Etnicidad/Apariencia</label>
-          <select id="ethnicity" name="ethnicity" value={formData.ethnicity || ''} onChange={handleChange}>
+          <select
+            id="ethnicity"
+            name="ethnicity"
+            value={formData.ethnicity || ''}
+            onChange={handleChange}
+          >
             <option value="">No especificado</option>
             <option value="caucasian">Caucásico</option>
             <option value="african-american">Afroamericano</option>
@@ -405,7 +418,9 @@ function ScriptFormPlus({ onSubmit, loading }) {
             onChange={handleChange}
             placeholder="p.ej., cabello rizado, gafas, pecas, barba..."
           />
-          <p className="form-help-text">Agrega características físicas específicas para hacer el personaje más distintivo</p>
+          <p className="form-help-text">
+            Agrega características físicas específicas para hacer el personaje más distintivo
+          </p>
         </div>
         <div className="form-group">
           <label htmlFor="clothingDetails">Detalles de la ropa (Opcional)</label>
@@ -417,11 +432,18 @@ function ScriptFormPlus({ onSubmit, loading }) {
             onChange={handleChange}
             placeholder="p.ej., suéter de punto crema, jeans azul oscuro, collar de plata..."
           />
-          <p className="form-help-text">Especifica prendas, colores, telas y accesorios exactos para incorporar</p>
+          <p className="form-help-text">
+            Especifica prendas, colores, telas y accesorios exactos para incorporar
+          </p>
         </div>
         <div className="form-group">
           <label htmlFor="accentRegion">Acento/Voz regional</label>
-          <select id="accentRegion" name="accentRegion" value={formData.accentRegion || 'neutral-american'} onChange={handleChange}>
+          <select
+            id="accentRegion"
+            name="accentRegion"
+            value={formData.accentRegion || 'neutral-american'}
+            onChange={handleChange}
+          >
             <option value="neutral-american">Americano neutral</option>
             <option value="southern-us">Sur de EE. UU.</option>
             <option value="new-york">Nueva York</option>
@@ -440,14 +462,25 @@ function ScriptFormPlus({ onSubmit, loading }) {
 
       <div className="form-group">
         <label htmlFor="settingMode">Modo de configuración</label>
-        <select id="settingMode" name="settingMode" value={formData.settingMode} onChange={handleChange}>
+        <select
+          id="settingMode"
+          name="settingMode"
+          value={formData.settingMode}
+          onChange={handleChange}
+        >
           <option value="ai-inspired">Inspirado en IA (ubicaciones auto-seleccionadas)</option>
           <option value="single">Una sola ubicación</option>
           <option value="home-tour">Ubicaciones mixtas - Recorrido por el hogar</option>
           <option value="indoor-outdoor">Ubicaciones mixtas - Interior/Exterior</option>
         </select>
         <p className="form-help-text">
-          {formData.settingMode === 'ai-inspired' ? 'La IA infiere ubicaciones de tu guion' : formData.settingMode === 'single' ? 'Graba en una ubicación consistente' : formData.settingMode === 'home-tour' ? 'Muévete por diferentes habitaciones de la casa' : 'Mezcla ubicaciones interiores y exteriores'}
+          {formData.settingMode === 'ai-inspired'
+            ? 'La IA infiere ubicaciones de tu guion'
+            : formData.settingMode === 'single'
+              ? 'Graba en una ubicación consistente'
+              : formData.settingMode === 'home-tour'
+                ? 'Muévete por diferentes habitaciones de la casa'
+                : 'Mezcla ubicaciones interiores y exteriores'}
         </p>
       </div>
 
@@ -463,7 +496,7 @@ function ScriptFormPlus({ onSubmit, loading }) {
             placeholder="p.ej., Sala de estar, Cocina..."
           />
         </div>
-      ) : ( formData.settingMode === 'home-tour' ? (
+      ) : formData.settingMode === 'home-tour' ? (
         <div className="form-group">
           {formData.locations.map((loc, idx) => (
             <input
@@ -487,8 +520,7 @@ function ScriptFormPlus({ onSubmit, loading }) {
             />
           ))}
         </div>
-      ) : null )
-      }
+      ) : null}
     </form>
   );
 }

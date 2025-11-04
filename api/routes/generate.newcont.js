@@ -45,7 +45,7 @@ router.post('/generate-new-cont', async (req, res) => {
       useAnimalAvatar = false,
       animalPreset, // 'tiger' | 'monkey' | 'fish'
       animalVoiceStyle, // e.g., 'narrator', 'playful', 'deep-resonant'
-      anthropomorphic = false
+      anthropomorphic = false,
     } = req.body;
 
     if (!script || script.trim().length < 50) {
@@ -99,8 +99,10 @@ router.post('/generate-new-cont', async (req, res) => {
     });
   } catch (error) {
     console.error('[NewCont] Error:', error);
-    res.status(500).json({ error: 'Failed to generate new continuation segments', message: error.message });
+    res
+      .status(500)
+      .json({ error: 'Failed to generate new continuation segments', message: error.message });
   }
 });
 
-export default router; 
+export default router;

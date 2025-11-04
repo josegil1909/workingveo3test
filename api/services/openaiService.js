@@ -15,13 +15,12 @@ class OpenAIService {
   }
 
   async loadTemplate(format = 'standard') {
-    const filename = format === 'enhanced' 
-      ? 'veo3-enhanced-continuity.md' 
-      : 'veo3-json-guidelines.md';
-    
+    const filename =
+      format === 'enhanced' ? 'veo3-enhanced-continuity.md' : 'veo3-json-guidelines.md';
+
     const templatePath = path.join(__dirname, '../../instructions/', filename);
     console.log(`[OpenAI] Loading template: ${filename}`);
-    
+
     return await fs.readFile(templatePath, 'utf8');
   }
 
@@ -29,11 +28,11 @@ class OpenAIService {
     console.log('[OpenAI] Starting generation with format:', params.jsonFormat || 'standard');
     console.log('[OpenAI] Setting mode:', params.settingMode || 'single');
     const template = await this.loadTemplate(params.jsonFormat);
-    
+
     // Step 1: Analyze and split script
     const scriptSegments = await this.splitScript(params.script);
     console.log('[OpenAI] Script split into', scriptSegments.length, 'segments');
-    
+
     // Prepare location data for mixed settings
     let locations = [];
     if (params.settingMode === 'single') {
@@ -44,12 +43,12 @@ class OpenAIService {
         locations.push(locations[locations.length - 1] || 'living room');
       }
     }
-    
+
     // Step 2: Generate base descriptions (used across all segments)
     console.log('[OpenAI] Generating base descriptions...');
     const baseDescriptions = await this.generateBaseDescriptions(params, template);
     console.log('[OpenAI] Base descriptions generated');
-    
+
     // Step 3: Generate each segment
     const segments = [];
     console.log('[OpenAI] Generating individual segments...');
@@ -65,18 +64,18 @@ class OpenAIService {
         currentLocation: locations[i],
         previousLocation: i > 0 ? locations[i - 1] : null,
         nextLocation: i < locations.length - 1 ? locations[i + 1] : null,
-        ...params
+        ...params,
       });
       segments.push(segment);
     }
-    
+
     return {
       segments,
       metadata: {
         totalSegments: segments.length,
         estimatedDuration: segments.length * 8,
-        characterId: this.generateCharacterId(params)
-      }
+        characterId: this.generateCharacterId(params),
+      },
     };
   }
 
@@ -85,32 +84,32 @@ class OpenAIService {
     const minWordsFor6Seconds = 15; // 15 words minimum for 6 seconds
     const targetWordsFor8Seconds = 20; // 20 words target for 8 seconds
     const maxWordsFor8Seconds = 22; // 22 words max to leave room for pauses
-    
+
     console.log('[OpenAI] Script splitting parameters:', {
       minWords: minWordsFor6Seconds,
       targetWords: targetWordsFor8Seconds,
-      maxWords: maxWordsFor8Seconds
+      maxWords: maxWordsFor8Seconds,
     });
-    
+
     const sentences = script.match(/[^.!?]+[.!?]+/g) || [script];
-    
+
     const rawSegments = [];
     let currentSegment = '';
     let currentWordCount = 0;
-    
+
     for (let i = 0; i < sentences.length; i++) {
       const sentence = sentences[i].trim();
       const sentenceWords = sentence.split(/\s+/).length;
-      
+
       if (currentSegment === '') {
         currentSegment = sentence;
         currentWordCount = sentenceWords;
-        
+
         while (currentWordCount < minWordsFor6Seconds && i + 1 < sentences.length) {
           i++;
           const nextSentence = sentences[i].trim();
           const nextWords = nextSentence.split(/\s+/).length;
-          
+
           if (currentWordCount + nextWords > maxWordsFor8Seconds) {
             if (currentWordCount < minWordsFor6Seconds) {
               currentSegment += ' ' + nextSentence;
@@ -124,32 +123,34 @@ class OpenAIService {
             currentWordCount += nextWords;
           }
         }
-        
+
         rawSegments.push(currentSegment);
         currentSegment = '';
         currentWordCount = 0;
       }
     }
-    
+
     const finalSegments = [];
-    
+
     for (let i = 0; i < rawSegments.length; i++) {
       const segment = rawSegments[i];
       const wordCount = segment.split(/\s+/).length;
       const duration = wordCount / wordsPerSecond;
-      
-      console.log(`[OpenAI] Raw segment ${i + 1}: ${wordCount} words, ~${duration.toFixed(1)}s speaking time`);
-      
+
+      console.log(
+        `[OpenAI] Raw segment ${i + 1}: ${wordCount} words, ~${duration.toFixed(1)}s speaking time`
+      );
+
       if (wordCount < minWordsFor6Seconds && i < rawSegments.length - 1) {
         const nextSegment = rawSegments[i + 1];
         const nextWords = nextSegment.split(/\s+/).length;
-        
+
         if (nextWords > minWordsFor6Seconds) {
           const nextSentences = nextSegment.match(/[^.!?]+[.!?]+/g) || [nextSegment];
           if (nextSentences.length > 1) {
             const borrowedSentence = nextSentences[0];
             const borrowedWords = borrowedSentence.split(/\s+/).length;
-            
+
             if (wordCount + borrowedWords <= maxWordsFor8Seconds) {
               finalSegments.push(segment + ' ' + borrowedSentence);
               rawSegments[i + 1] = nextSentences.slice(1).join(' ');
@@ -157,33 +158,34 @@ class OpenAIService {
             }
           }
         }
-        
+
         if (i < rawSegments.length - 1) {
           const merged = segment + ' ' + rawSegments[i + 1];
           const mergedWords = merged.split(/\s+/).length;
-          
-          if (mergedWords <= 30) { // Reasonable upper limit
+
+          if (mergedWords <= 30) {
+            // Reasonable upper limit
             finalSegments.push(merged);
             i++; // Skip next segment
             continue;
           }
         }
       }
-      
+
       finalSegments.push(segment);
     }
-    
+
     console.log('[OpenAI] Final segment distribution:');
     finalSegments.forEach((segment, i) => {
       const wordCount = segment.split(/\s+/).length;
       const duration = wordCount / wordsPerSecond;
       console.log(`  Segment ${i + 1}: ${wordCount} words, ~${duration.toFixed(1)}s speaking time`);
-      
+
       if (duration < 6) {
         console.warn(`  ⚠️  Segment ${i + 1} is under 6 seconds!`);
       }
     });
-    
+
     return finalSegments;
   }
 
@@ -192,15 +194,15 @@ class OpenAIService {
     try {
       const isEnhanced = params.jsonFormat === 'enhanced';
       const response = await this.openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: `${template}\n\nGenerate the base descriptions that will remain IDENTICAL across all segments. Follow the exact word count requirements. Return ONLY valid JSON.`
-        },
-        {
-          role: "user",
-          content: `Create base descriptions for:
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: `${template}\n\nGenerate the base descriptions that will remain IDENTICAL across all segments. Follow the exact word count requirements. Return ONLY valid JSON.`,
+          },
+          {
+            role: 'user',
+            content: `Create base descriptions for:
 ${params.avatarMode === 'animal' ? `Avatar: ANIMAL\nSpecies: ${params.animal?.species}\nAnthropomorphic: ${params.animal?.anthropomorphic ? 'Yes' : 'No'}\nVoice Style: ${params.animal?.voiceStyle || 'narrator'}` : `Age: ${params.ageRange}\nGender: ${params.gender}`}
 Setting Mode: ${params.settingMode || 'single'}
 ${params.settingMode === 'single' ? `Room: ${params.room}` : `Locations: ${params.locations?.join(', ') || 'various'}`}
@@ -214,7 +216,9 @@ Energy Arc: ${params.energyArc || 'consistent'}
 Narrative Style: ${params.narrativeStyle || 'direct-review'}
 
 Return a JSON object with these exact keys:
-${params.avatarMode === 'animal' ? `{
+${
+  params.avatarMode === 'animal'
+    ? `{
   "animal_physical": "[180+ words - Hyperreal morphology, photoreal fur/skin/feather scaling, whiskers/fin details, eye coloration, unique markings]",
   "animal_behavior": "[150+ words - Natural movement quality, gait, idle behaviors, breathing and chest/shoulder mechanics, credible head/eye coordination]",
   "animal_voice": "[120+ words - Narrated or stylized delivery consistent with ${params.animal?.voiceStyle || 'narrator'}; map voice timbre to species realism; avoid cartoonish speech unless anthropomorphic=true]",
@@ -222,22 +226,24 @@ ${params.avatarMode === 'animal' ? `{
   "realism_rendering": "[120+ words - Cinematic photorealism: physically plausible lighting, micro-specular highlights in eyes, tearline sheen, subsurface scattering, fur clumping and flyaways, soft motion blur, depth of field]",
   "environment": "[${isEnhanced ? '250+' : '150+'} words - Location style and fixed elements consistent across segments]",
   "productHandling": "[50+ words - How the animal avatar references or indicates product (gaze, paw/fin/gesture, narrator mention) without breaking realism]"
-}` : `{
+}`
+    : `{
   "physical": "[${isEnhanced ? '200+' : '100+'} words description]",
   "clothing": "[${isEnhanced ? '150+' : '100+'} words description]",
   "environment": "[${isEnhanced ? '250+' : '150+'} words - For mixed locations, describe the general home style/aesthetic that connects all spaces]",
   "voice": "[${isEnhanced ? '100+' : '50+'} words description]",
   "productHandling": "[50+ words - How character naturally handles/displays the product based on ${params.productStyle} style]"
-}`}
+}`
+}
 
-These descriptions must be detailed enough to use word-for-word across all segments. For mixed locations, focus on elements that remain consistent throughout the home.`
-        }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.3,
-      max_tokens: 4500
+These descriptions must be detailed enough to use word-for-word across all segments. For mixed locations, focus on elements that remain consistent throughout the home.`,
+          },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.3,
+        max_tokens: 4500,
       });
-      
+
       console.log('[OpenAI] API response received');
       const parsed = JSON.parse(response.choices[0].message.content);
       console.log('[OpenAI] Base descriptions parsed successfully');
@@ -252,15 +258,15 @@ These descriptions must be detailed enough to use word-for-word across all segme
     try {
       const isEnhanced = params.jsonFormat === 'enhanced';
       const response = await this.openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: `${params.template}\n\nGenerate a Veo 3 JSON segment following the exact structure. Use the provided base descriptions WORD-FOR-WORD.`
-        },
-        {
-          role: "user",
-          content: `Create segment ${params.segmentNumber} of ${params.totalSegments}:
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: `${params.template}\n\nGenerate a Veo 3 JSON segment following the exact structure. Use the provided base descriptions WORD-FOR-WORD.`,
+          },
+          {
+            role: 'user',
+            content: `Create segment ${params.segmentNumber} of ${params.totalSegments}:
 
 Dialogue for this segment: "${params.scriptPart}"
 Product: ${params.product}
@@ -276,12 +282,16 @@ Visual Settings:
 ${params.avatarMode === 'animal' ? `- Realism: Photorealistic look with cinematic lighting, eye speculars, subtle motion blur, micro-fur dynamics.` : ''}
 
 Base Descriptions (USE EXACTLY AS PROVIDED):
-${params.avatarMode === 'animal' ? `Animal Physical: ${params.baseDescriptions.animal_physical}
+${
+  params.avatarMode === 'animal'
+    ? `Animal Physical: ${params.baseDescriptions.animal_physical}
 Animal Behavior: ${params.baseDescriptions.animal_behavior}
 Animal Voice: ${params.baseDescriptions.animal_voice}
-Lip-Sync Baseline: ${params.baseDescriptions.lip_sync_baseline}` : `Physical: ${params.baseDescriptions.physical}
+Lip-Sync Baseline: ${params.baseDescriptions.lip_sync_baseline}`
+    : `Physical: ${params.baseDescriptions.physical}
 Clothing: ${params.baseDescriptions.clothing}
-Base Voice: ${params.baseDescriptions.voice}`}
+Base Voice: ${params.baseDescriptions.voice}`
+}
 General Environment: ${params.baseDescriptions.environment}
 Product Handling: ${params.baseDescriptions.productHandling || 'Natural handling'}
 
@@ -294,14 +304,14 @@ Generate the complete JSON with:
 2. character_description (${params.avatarMode === 'animal' ? 'using animal base descriptions + current state' : 'using base descriptions + current state'})
 3. scene_continuity (adapt base environment to current location: ${params.currentLocation})
 4. action_timeline (${isEnhanced ? 'with synchronized_actions, micro_expressions, breathing_rhythm' : 'synchronized with dialogue'})
-${params.avatarMode === 'animal' ? '5. action_timeline must include lip_sync, and character_description should include facial_acting details.' : '5. Include natural movement/transition if location changes'}`
-        }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.5,
-      max_tokens: 4500
+${params.avatarMode === 'animal' ? '5. action_timeline must include lip_sync, and character_description should include facial_acting details.' : '5. Include natural movement/transition if location changes'}`,
+          },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.5,
+        max_tokens: 4500,
       });
-      
+
       const parsed = JSON.parse(response.choices[0].message.content);
       return parsed;
     } catch (error) {
@@ -311,20 +321,23 @@ ${params.avatarMode === 'animal' ? '5. action_timeline must include lip_sync, an
   }
 
   generateCharacterId(params) {
-    return `${(params.avatarMode==='animal'?params.animal?.species:'human')}_${params.gender || 'N/A'}_${params.ageRange || 'N/A'}_${Date.now()}`.replace(/\s+/g, '_');
+    return `${params.avatarMode === 'animal' ? params.animal?.species : 'human'}_${params.gender || 'N/A'}_${params.ageRange || 'N/A'}_${Date.now()}`.replace(
+      /\s+/g,
+      '_'
+    );
   }
 
   async generateSegmentsWithVoiceProfile(params) {
     console.log('[OpenAI] Generating ALL segments with voice profile focus');
-    
+
     // Step 1: Generate first segment with full detail
     const firstSegmentParams = { ...params, jsonFormat: 'enhanced' };
     const template = await this.loadTemplate('enhanced');
-    
+
     // Split script into segments
     const scriptSegments = await this.splitScript(params.script);
     console.log('[OpenAI] Script split into', scriptSegments.length, 'segments');
-    
+
     // Prepare location data (same as standard mode)
     let locations = [];
     if (params.settingMode === 'single') {
@@ -335,11 +348,11 @@ ${params.avatarMode === 'animal' ? '5. action_timeline must include lip_sync, an
         locations.push(locations[locations.length - 1] || 'living room');
       }
     }
-    
+
     // Generate base descriptions (for first segment)
     console.log('[OpenAI] Generating base descriptions...');
     const baseDescriptions = await this.generateBaseDescriptions(firstSegmentParams, template);
-    
+
     // Generate first segment with full detail
     console.log('[OpenAI] Generating first segment with full detail...');
     const firstSegment = await this.generateSegment({
@@ -352,16 +365,16 @@ ${params.avatarMode === 'animal' ? '5. action_timeline must include lip_sync, an
       currentLocation: locations[0],
       previousLocation: null,
       nextLocation: locations.length > 1 ? locations[1] : null,
-      ...firstSegmentParams
+      ...firstSegmentParams,
     });
-    
+
     // Extract voice profile from first segment
     const voiceProfile = await this.extractDetailedVoiceProfile(firstSegment, params);
-    
+
     // Generate remaining segments with voice/behavior focus
     const segments = [firstSegment];
     console.log('[OpenAI] Generating remaining segments with voice/behavior focus...');
-    
+
     for (let i = 1; i < scriptSegments.length; i++) {
       console.log(`[OpenAI] Generating segment ${i + 1}/${scriptSegments.length}`);
       const segment = await this.generateContinuationStyleSegment({
@@ -374,25 +387,25 @@ ${params.avatarMode === 'animal' ? '5. action_timeline must include lip_sync, an
         currentLocation: locations[i],
         previousLocation: i > 0 ? locations[i - 1] : null,
         nextLocation: i < locations.length - 1 ? locations[i + 1] : null,
-        ...params
+        ...params,
       });
       segments.push(segment);
     }
-    
+
     return {
       segments,
       metadata: {
         totalSegments: segments.length,
         estimatedDuration: segments.length * 8,
-        characterId: this.generateCharacterId(params)
+        characterId: this.generateCharacterId(params),
       },
-      voiceProfile
+      voiceProfile,
     };
   }
 
   async extractDetailedVoiceProfile(segment, params) {
     console.log('[OpenAI] Extracting detailed voice profile');
-    
+
     const voiceProfile = {
       baseVoice: segment.character_description?.voice_matching || '',
       technical: {
@@ -400,31 +413,32 @@ ${params.avatarMode === 'animal' ? '5. action_timeline must include lip_sync, an
         rate: '145-150 wpm',
         tone: 'warm alto with bright overtones',
         breathPattern: 'natural pauses between phrases',
-        emphasis: 'slight volume increase on key words'
+        emphasis: 'slight volume increase on key words',
       },
       personality: {
         voiceType: params.voiceType || 'warm-friendly',
         energyLevel: params.energyLevel || '80',
-        naturalQualities: []
+        naturalQualities: [],
       },
       continuityMarkers: {
         sentenceEndings: 'slight downward inflection',
         excitement: 'pitch rises 10-15 Hz',
-        productMention: 'slower pace, clearer articulation'
-      }
+        productMention: 'slower pace, clearer articulation',
+      },
     };
 
     // Generate more detailed voice characteristics using GPT
     try {
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4o",
+        model: 'gpt-4o',
         messages: [
           {
-            role: "system",
-            content: "Generate detailed voice continuity profile for video consistency. Be extremely specific about vocal qualities. Allow animal narrator styles when avatarMode=animal."
+            role: 'system',
+            content:
+              'Generate detailed voice continuity profile for video consistency. Be extremely specific about vocal qualities. Allow animal narrator styles when avatarMode=animal.',
           },
           {
-            role: "user",
+            role: 'user',
             content: `Create detailed voice profile for:
 ${params.avatarMode === 'animal' ? `Animal Species: ${params.animal?.species}\nVoice Style: ${params.animal?.voiceStyle || 'narrator'}\nAnthropomorphic: ${params.animal?.anthropomorphic ? 'Yes' : 'No'}` : `Age: ${params.ageRange}\nGender: ${params.gender}\nVoice Type: ${params.voiceType}`}
 Energy Level: ${params.energyLevel}%
@@ -444,18 +458,17 @@ Return a JSON object with:
   "uniqueMarkers": ["list of specific characteristics"],
   "regionalAccent": "[if applicable]",
   "vocalTexture": "[smooth, raspy, clear, etc]"
-}`
-          }
+}`,
+          },
         ],
-        response_format: { type: "json_object" },
+        response_format: { type: 'json_object' },
         temperature: 0.3,
-        max_tokens: 1000
+        max_tokens: 1000,
       });
 
       const enhancedProfile = JSON.parse(response.choices[0].message.content);
       voiceProfile.technical = { ...voiceProfile.technical, ...enhancedProfile };
       voiceProfile.personality.naturalQualities = enhancedProfile.uniqueMarkers || [];
-      
     } catch (error) {
       console.error('[OpenAI] Error enhancing voice profile:', error);
     }
@@ -467,17 +480,17 @@ Return a JSON object with:
     console.log('[OpenAI] Generating continuation segment');
     const templatePath = path.join(__dirname, '../../instructions/veo3-continuation-minimal.md');
     const template = await fs.readFile(templatePath, 'utf8');
-    
+
     try {
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4o",
+        model: 'gpt-4o',
         messages: [
           {
-            role: "system",
-            content: `${template}\n\nGenerate a continuation segment with MINIMAL description but DETAILED voice and behavior specs. Allow animal avatar narration when avatarMode=animal.`
+            role: 'system',
+            content: `${template}\n\nGenerate a continuation segment with MINIMAL description but DETAILED voice and behavior specs. Allow animal avatar narration when avatarMode=animal.`,
           },
           {
-            role: "user",
+            role: 'user',
             content: `Create a continuation segment:
 
 Image Context: Character from screenshot at ${params.imageUrl}
@@ -490,32 +503,34 @@ ${params.avatarMode === 'animal' ? `Avatar: ANIMAL\nSpecies: ${params.animal?.sp
 Voice Profile to Match EXACTLY:
 ${JSON.stringify(params.voiceProfile, null, 2)}
 
-Generate the JSON following the continuation minimal structure.`
-          }
+Generate the JSON following the continuation minimal structure.`,
+          },
         ],
-        response_format: { type: "json_object" },
+        response_format: { type: 'json_object' },
         temperature: 0.4,
-        max_tokens: 3000
+        max_tokens: 3000,
       });
-      
+
       const segment = JSON.parse(response.choices[0].message.content);
-      
+
       if (segment.character_description) {
         segment.character_description.voice_matching = params.voiceProfile.baseVoice;
         segment.character_description.voice_technical = params.voiceProfile.technical;
       }
-      
+
       if (segment.action_timeline && !segment.action_timeline.voice_continuity) {
         segment.action_timeline.voice_continuity = {
           technical_specs: params.voiceProfile.technical,
-          emotional_tone: "Maintaining consistent warmth and enthusiasm",
-          pacing_rhythm: params.voiceProfile.technical.breathPattern || "Natural pauses between phrases",
-          emphasis_patterns: params.voiceProfile.continuityMarkers?.emphasis || "Slight volume increase on key words"
+          emotional_tone: 'Maintaining consistent warmth and enthusiasm',
+          pacing_rhythm:
+            params.voiceProfile.technical.breathPattern || 'Natural pauses between phrases',
+          emphasis_patterns:
+            params.voiceProfile.continuityMarkers?.emphasis ||
+            'Slight volume increase on key words',
         };
       }
-      
+
       return segment;
-      
     } catch (error) {
       console.error('[OpenAI] Error in generateContinuationSegment:', error);
       throw error;
@@ -525,17 +540,17 @@ Generate the JSON following the continuation minimal structure.`
   async generateContinuationStyleSegment(params) {
     console.log('[OpenAI] Generating continuation-style segment');
     const template = await this.loadTemplate(params.jsonFormat || 'standard');
-    
+
     try {
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4o",
+        model: 'gpt-4o',
         messages: [
           {
-            role: "system",
-            content: `${template}\n\nGenerate a segment that maintains the EXACT same structure as standard segments, but with ENHANCED voice and behavior sections. Support animal avatar narration when avatarMode=animal.`
+            role: 'system',
+            content: `${template}\n\nGenerate a segment that maintains the EXACT same structure as standard segments, but with ENHANCED voice and behavior sections. Support animal avatar narration when avatarMode=animal.`,
           },
           {
-            role: "user",
+            role: 'user',
             content: `Create segment ${params.segmentNumber} of ${params.totalSegments}:
 
 Dialogue for this segment: "${params.scriptPart}"
@@ -551,46 +566,56 @@ Visual Settings:
 - Energy Level: ${this.getEnergyLevel(params.energyArc, params.segmentNumber, params.totalSegments)}
 
 Base Descriptions (USE EXACTLY AS PROVIDED):
-${params.avatarMode === 'animal' ? `Animal Physical: ${params.baseDescriptions.animal_physical}
+${
+  params.avatarMode === 'animal'
+    ? `Animal Physical: ${params.baseDescriptions.animal_physical}
 Animal Behavior: ${params.baseDescriptions.animal_behavior}
-Animal Voice: ${params.baseDescriptions.animal_voice}` : `Physical: ${params.baseDescriptions.physical}
+Animal Voice: ${params.baseDescriptions.animal_voice}`
+    : `Physical: ${params.baseDescriptions.physical}
 Clothing: ${params.baseDescriptions.clothing}
-Base Voice: ${params.baseDescriptions.voice}`}
+Base Voice: ${params.baseDescriptions.voice}`
+}
 General Environment: ${params.baseDescriptions.environment}
 Product Handling: ${params.baseDescriptions.productHandling || 'Natural handling'}
 
 Voice Profile to Maintain:
 ${JSON.stringify(params.voiceProfile, null, 2)}
 
-${params.previousSegment ? `Previous segment ended with:
-Position: ${params.previousSegment.action_timeline?.transition_prep || params.previousSegment.segment_info?.continuity_markers?.end_position}` : ''}
+${
+  params.previousSegment
+    ? `Previous segment ended with:
+Position: ${params.previousSegment.action_timeline?.transition_prep || params.previousSegment.segment_info?.continuity_markers?.end_position}`
+    : ''
+}
 
 CRITICAL REQUIREMENTS:
 1. Generate the complete JSON with standard structure
 2. character_description.voice_matching must be MINIMUM 100 words focusing on maintaining exact voice consistency (adapt for animal narrator)
 3. Include a new "behavioral_consistency" field in character_description with MINIMUM 100 words on gesture patterns and movement style (or animal movement cues)
 4. All other fields follow standard format
-5. Maintain continuity from previous segment`
-          }
+5. Maintain continuity from previous segment`,
+          },
         ],
-        response_format: { type: "json_object" },
+        response_format: { type: 'json_object' },
         temperature: 0.5,
-        max_tokens: 4000
+        max_tokens: 4000,
       });
-      
+
       const segment = JSON.parse(response.choices[0].message.content);
-      
+
       if (segment.character_description) {
-        if (!segment.character_description.voice_matching || segment.character_description.voice_matching.length < 100) {
+        if (
+          !segment.character_description.voice_matching ||
+          segment.character_description.voice_matching.length < 100
+        ) {
           segment.character_description.voice_matching = `${params.voiceProfile.baseVoice} Maintaining exact technical specifications: ${JSON.stringify(params.voiceProfile.technical)}.`;
         }
         if (!segment.character_description.behavioral_consistency) {
           segment.character_description.behavioral_consistency = `Movement and gesture patterns remain consistent with established style.`;
         }
       }
-      
+
       return segment;
-      
     } catch (error) {
       console.error('[OpenAI] Error in generateContinuationStyleSegment:', error);
       throw error;
@@ -599,10 +624,10 @@ CRITICAL REQUIREMENTS:
 
   getEnergyLevel(energyArc, segmentNumber, totalSegments) {
     const progress = segmentNumber / totalSegments;
-    
+
     switch (energyArc) {
       case 'building':
-        return `${Math.round(60 + (35 * progress))}% - Building from calm to excited`;
+        return `${Math.round(60 + 35 * progress)}% - Building from calm to excited`;
       case 'problem-solution':
         if (progress < 0.3) return '70% - Concerned, explaining problem';
         if (progress < 0.7) return '60% - Working through solution';

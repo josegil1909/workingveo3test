@@ -61,7 +61,9 @@ function NewContinuationMode() {
     <div className="continuation-mode-container">
       <div className="continuation-header">
         <h2>Modo de Nueva Continuación</h2>
-        <p className="section-description">Modo de continuación aislada con soporte para avatares de animales.</p>
+        <p className="section-description">
+          Modo de continuación aislada con soporte para avatares de animales.
+        </p>
       </div>
 
       {!results ? (
@@ -71,7 +73,12 @@ function NewContinuationMode() {
             <div className="form-row">
               <div className="form-group">
                 <label>
-                  <input type="checkbox" name="useAnimalAvatar" checked={formData.useAnimalAvatar} onChange={handleChange} />
+                  <input
+                    type="checkbox"
+                    name="useAnimalAvatar"
+                    checked={formData.useAnimalAvatar}
+                    onChange={handleChange}
+                  />
                   Usar Avatar Animal
                 </label>
               </div>
@@ -85,7 +92,11 @@ function NewContinuationMode() {
               </div>
               <div className="form-group">
                 <label>Estilo de Voz</label>
-                <select name="animalVoiceStyle" value={formData.animalVoiceStyle} onChange={handleChange}>
+                <select
+                  name="animalVoiceStyle"
+                  value={formData.animalVoiceStyle}
+                  onChange={handleChange}
+                >
                   <option value="narrator">Narrador (neutral, articulado)</option>
                   <option value="deep-resonant">Profundo y Resonante</option>
                   <option value="playful">Juguetón y Ligero</option>
@@ -94,7 +105,12 @@ function NewContinuationMode() {
               </div>
               <div className="form-group">
                 <label>
-                  <input type="checkbox" name="anthropomorphic" checked={formData.anthropomorphic} onChange={handleChange} />
+                  <input
+                    type="checkbox"
+                    name="anthropomorphic"
+                    checked={formData.anthropomorphic}
+                    onChange={handleChange}
+                  />
                   Antropomórfico (gestos similares a humanos)
                 </label>
               </div>
@@ -105,11 +121,23 @@ function NewContinuationMode() {
             <h3>Producto y Guion</h3>
             <div className="form-group">
               <label>Producto *</label>
-              <input type="text" name="product" value={formData.product} onChange={handleChange} required />
+              <input
+                type="text"
+                name="product"
+                value={formData.product}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="form-group">
               <label>Guion *</label>
-              <textarea name="script" value={formData.script} onChange={handleChange} rows={8} required />
+              <textarea
+                name="script"
+                value={formData.script}
+                onChange={handleChange}
+                rows={8}
+                required
+              />
             </div>
           </div>
 
@@ -121,7 +149,9 @@ function NewContinuationMode() {
         <>
           <ResultsDisplay results={results} />
           <DownloadButton segments={results.segments} metadata={results.metadata} />
-          <button className="back-button" onClick={() => setResults(null)}>Generar Nuevo Guion</button>
+          <button className="back-button" onClick={() => setResults(null)}>
+            Generar Nuevo Guion
+          </button>
         </>
       )}
 

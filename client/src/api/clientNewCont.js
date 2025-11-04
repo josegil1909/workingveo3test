@@ -11,4 +11,4 @@ export async function generateNewCont(data) {
   }
   const result = await response.json();
   return result;
-} 
+}
