@@ -6,6 +6,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const DEFAULT_OPENAI_MODEL =
+  process.env.OPENAI_MODEL_PLUS || process.env.OPENAI_MODEL || 'gpt-4o';
+
 // Simple realism helpers
 const INDOOR_LOCATIONS = new Set([
   'living room',
@@ -275,7 +278,7 @@ class OpenAIServicePlus {
     console.log('[OpenAI Plus] Inferring locations from script');
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+  model: DEFAULT_OPENAI_MODEL,
         messages: [
           {
             role: 'system',
@@ -308,7 +311,7 @@ class OpenAIServicePlus {
     console.log('[OpenAI Plus] Inferring camera directions from script');
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+  model: DEFAULT_OPENAI_MODEL,
         messages: [
           {
             role: 'system',
@@ -345,7 +348,7 @@ class OpenAIServicePlus {
     try {
       const isEnhanced = params.jsonFormat === 'enhanced';
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+  model: DEFAULT_OPENAI_MODEL,
         messages: [
           {
             role: 'system',
@@ -417,7 +420,7 @@ Hard rules: Do NOT reference subtitles, captions, SFX, or music in any field.`,
       }
 
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+  model: DEFAULT_OPENAI_MODEL,
         messages: [
           {
             role: 'system',

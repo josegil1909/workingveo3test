@@ -132,6 +132,25 @@ pnpm run check
 pnpm run check:ci
 ```
 
+## Pruebas
+
+```bash
+pnpm test
+
+# Modo interactivo
+pnpm test:watch
+```
+
+La suite usa **Vitest** junto a **Supertest** para validar los endpoints del servidor.
+Las pruebas cubren:
+
+- Salud del servidor (`GET /api/health`).
+- Validaciones de entrada en los endpoints de generación (`/api/generate`, `/api/generate-plus`, `/api/generate-continuation`, `/api/generate-new-cont`).
+- Validaciones de video (`/api/generate-videos`).
+- Descarga de ZIP (`/api/download`).
+
+> Las pruebas no ejecutan llamadas reales a OpenAI ni Gemini; únicamente comprueban las rutas y sus respuestas.
+
 ## Estructura del Proyecto
 
 ```

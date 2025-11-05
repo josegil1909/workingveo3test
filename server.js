@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import generateRoute from './api/routes/generate.js';
 import generateContinuationRoute from './api/routes/generateContinuation.js';
 import generatePlusRoute from './api/routes/generate.plus.js';
@@ -62,8 +62,15 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`Build directory: ${path.join(__dirname, 'build')}`);
-});
+let server = null;
+
+if (process.env.NODE_ENV !== 'test') {
+  server = app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Build directory: ${path.join(__dirname, 'build')}`);
+  });
+}
+
+export { app, server };
+export default app;

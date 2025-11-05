@@ -1,10 +1,12 @@
 import OpenAI from 'openai';
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const DEFAULT_OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o';
 
 class OpenAIService {
   constructor() {
@@ -194,7 +196,7 @@ class OpenAIService {
     try {
       const isEnhanced = params.jsonFormat === 'enhanced';
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+  model: DEFAULT_OPENAI_MODEL,
         messages: [
           {
             role: 'system',
@@ -258,7 +260,7 @@ These descriptions must be detailed enough to use word-for-word across all segme
     try {
       const isEnhanced = params.jsonFormat === 'enhanced';
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+  model: DEFAULT_OPENAI_MODEL,
         messages: [
           {
             role: 'system',
@@ -430,7 +432,7 @@ ${params.avatarMode === 'animal' ? '5. action_timeline must include lip_sync, an
     // Generate more detailed voice characteristics using GPT
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+  model: DEFAULT_OPENAI_MODEL,
         messages: [
           {
             role: 'system',
@@ -483,7 +485,7 @@ Return a JSON object with:
 
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+  model: DEFAULT_OPENAI_MODEL,
         messages: [
           {
             role: 'system',
@@ -543,7 +545,7 @@ Generate the JSON following the continuation minimal structure.`,
 
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+  model: DEFAULT_OPENAI_MODEL,
         messages: [
           {
             role: 'system',

@@ -18,7 +18,9 @@
     "lint": "biome lint --write .",
     "lint:check": "biome lint .",
     "check": "biome check --write . && pnpm run format:md",
-    "check:ci": "biome ci . && pnpm run format:md:check"
+    "check:ci": "biome ci . && pnpm run format:md:check",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@google-cloud/vertexai": "^1.9.0",
@@ -37,6 +39,8 @@
     "@biomejs/biome": "^1.9.4",
     "concurrently": "^8.2.2",
     "markdownlint-cli2": "^0.18.1",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "supertest": "^7.1.4",
+    "vitest": "^4.0.7"
   }
 }

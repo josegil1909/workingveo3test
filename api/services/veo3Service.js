@@ -1,12 +1,18 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { VertexAI } from '@google-cloud/vertexai';
-import genai from '@google/genai';
+import { GoogleGenAI } from '@google/genai';
+
+const GEMINI_TEXT_MODEL =
+  process.env.GEMINI_MODEL || process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash';
+const VERTEX_GEMINI_MODEL = process.env.VERTEX_GEMINI_MODEL || 'gemini-2.5-pro';
+const VEO_VIDEO_MODEL = process.env.VEO_VIDEO_MODEL || 'veo-3.1-generate-preview';
 
 class Veo3Service {
   constructor() {
     this.genAI = null;
     this.vertexAI = null;
     this.useVertexAI = false;
+    this.videoGenAIClient = null;
     this.initializeClient();
   }
 
@@ -38,6 +44,7 @@ class Veo3Service {
       const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
       if (apiKey && apiKey.trim() !== '') {
         this.genAI = new GoogleGenerativeAI(apiKey);
+        this.videoGenAIClient = new GoogleGenAI({ apiKey });
         console.log('[Veo3] Gemini API client initialized');
       } else {
         console.warn('[Veo3] No API credentials found');
@@ -67,11 +74,11 @@ class Veo3Service {
       let model;
       if (this.useVertexAI) {
         model = this.vertexAI.getGenerativeModel({
-          model: 'gemini-1.5-flash-002',
+          model: VERTEX_GEMINI_MODEL,
         });
       } else {
         model = this.genAI.getGenerativeModel({
-          model: 'gemini-1.5-flash',
+          model: GEMINI_TEXT_MODEL,
         });
       }
 
@@ -236,11 +243,19 @@ Style: Authentic UGC content, casual and relatable`;
 
       // Use Gemini API for Veo 3.1
       if (this.genAI) {
-        const client = new genai.Client({ apiKey: process.env.GOOGLE_GEMINI_API_KEY });
+        if (!this.videoGenAIClient && process.env.GOOGLE_GEMINI_API_KEY) {
+          this.videoGenAIClient = new GoogleGenAI({ apiKey: process.env.GOOGLE_GEMINI_API_KEY });
+        }
+
+        if (!this.videoGenAIClient) {
+          throw new Error('Gemini video client not initialized. Please set GOOGLE_GEMINI_API_KEY');
+        }
+
+        const client = this.videoGenAIClient;
 
         // Start video generation operation
         const operation = await client.models.generateVideos({
-          model: 'veo-3.1-generate-preview',
+          model: VEO_VIDEO_MODEL,
           prompt: prompt,
           image: options.image,
           lastFrame: options.lastFrame,
@@ -258,7 +273,7 @@ Style: Authentic UGC content, casual and relatable`;
         while (!currentOperation.done && pollCount < maxPolls) {
           console.log(`[Veo3] Polling operation status... (${pollCount + 1}/${maxPolls})`);
           await this.sleep(10000); // Wait 10 seconds
-          currentOperation = await client.operations.get(currentOperation);
+          currentOperation = await client.operations.get({ name: currentOperation.name });
           pollCount++;
         }
 
